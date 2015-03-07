@@ -1,0 +1,78 @@
+*
+* Explanation of the various lists
+*
+
+Thread element
+--------------
+*    0,U - pointer to next element
+*    2,U - code entry point
+*    7,U - pointer to shape
+* the rest of the data is thread-specific
+
+
+Shape element
+-------------
+*    2,X - address of current raster
+*    4,X - destination on screen (word)
+*    6,X - pointer to thread
+*    8,X - pointer to code ?
+*   10,X - msbyte of x?
+*   12,X - lsbyte of x?
+*   14,X - x (word)
+*   16,X - y (word)
+*   18,X - MSBit indicates left/right nybble
+*   20,X - address of shape table
+*   22,X - 
+
+
+$9900 pool
+----------
+Pool has 180 elements, each 24 bytes.
+
+Free list head pointer is at $1B.
+
+Elements in this list are moved into several different lists.
+Active head list pointers are at $17, $1F, $21 and $23.
+
+Format:
+	0,1 - link to next element
+
+
+$A9E0 list
+----------
+This is the main thread list.
+List has 120 elements, each 15 bytes.
+
+Active list head pointer is at $11.
+Free   list head pointer is at $13.
+
+Format:
+	0,1	- link to next element
+	2,3	- entry address
+	4	- 1
+	5	- period
+	6	- 0; used to differentiate between this and $B0E8 elements
+
+When an element is installed, it is placed before the current thread.
+
+
+$B0E8 list
+----------
+List has 20 elements, each 31 bytes.
+
+Free list head pointer is at $1D
+
+Format:
+	0,1	- link to next element
+	2,3	- entry address
+	4	- 1
+	5	- period
+	6	- 1; used to differentiate between this and $A9E0 elements
+
+This is not a thread list dispatched by the heart of Robotron, but
+perhaps from a secondary thread dispatcher...
+
+
+$B354 list ($B354-$B3A3)
+----------
+List of 80 pointers, probably to active humans

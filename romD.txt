@@ -1,0 +1,6031 @@
+D000:7E D1 06		JMP   $D106	; cold start
+D003:7E DE 0F		JMP   $DE0F
+D006:7E D3 B6		JMP   $D3B6	; play sound in B
+D009:7E DC 11		JMP   $DC11
+D00C:7E DB 9C		JMP   $DB9C	; add to player score
+D00F:7E DC 13		JMP   $DC13
+D012:7E DB 7C		JMP   $DB7C	; clear screen
+D015:7E DB 03		JMP   $DB03	; erase shape
+D018:7E DA F2		JMP   $DAF2	; shape something
+D01B:7E DA DF		JMP   $DADF	; shape blitter
+D01E:7E DA BF		JMP   $DABF	; shape blitter - erase?
+D021:7E DA 82		JMP   $DA82	; shape blitter - draw?
+D024:7E D8 9E		JMP   $D89E	; install color cycling threads
+D027:7E D7 C9		JMP   $D7C9	;
+D02A:7E D5 F5		JMP   $D5F5	; convert binary in A to BCD
+D02D:7E D5 E2		JMP   $D5E2	; convert BCD in B to binary
+D030:7E D7 A5		JMP   $D7A5	; initialize $9900 pool
+D033:7E D7 95		JMP   $D795	; install initial color map
+D036:7E D6 EC		JMP   $D6EC	; initialize $A9E0 and $B0E8 free lists
+D039:7E D6 CD		JMP   $D6CD	; random number
+D03C:7E D6 C8		JMP   $D6C8	; generate two bytes of randomness
+D03F:7E D6 B6		JMP   $D6B6	; pick a random number from 1 to <max>
+D042:7E D6 AC		JMP   $D6AC	; generate a random number, multiplied
+D045:7E D6 99		JMP   $D699	; get address of current player data
+D048:7E D6 A8		JMP   $D6A8	; get address of player data
+D04B:7E D3 C7		JMP   $D3C7	; play a song
+D04E:7E D2 A7		JMP   $D2A7	; remove linked element and put into $9900 pool
+D051:7E D2 8F		JMP   $D28F	; pull free element from $9900 pool
+D054:7E D2 81		JMP   $D281	; install thread (from $A9E0 free list), parms in-line
+D057:7E D2 5A		JMP   $D25A	; install thread (from $A9E0 free list), parms in regs
+D05A:7E D2 43		JMP   $D243	; install thread (from $B0E8 free list)
+D05D:7E D2 18		JMP   $D218	; remove thread
+D060:7E D1 FF		JMP   $D1FF	; remove all threads
+D063:7E D1 F3		JMP   $D1F3	; return from thread and remove from activity
+D066:7E D1 E3		JMP   $D1E3	; return from thread and reschedule
+D069:7E D3 0E		JMP   $D30E
+D06C:7E D3 2B		JMP   $D32B	; install new shape and thread
+D06F:7E D2 FD		JMP   $D2FD
+D072:7E D3 06		JMP   $D306	; remove shape from shapes list
+D075:7E D3 1B		JMP   $D31B	; remove shape from shapes list and erase it on screen
+D078:7E D3 20		JMP   $D320	; remove shape and remove its thread
+D07B:7E D2 DA		JMP   $D2DA	; install new element into $21 list
+D07E:7E D2 C2		JMP   $D2C2	; remove element from $21 list
+D081:7E D2 E7		JMP   $D2E7	; install new element into $23 list
+D084:7E D2 CA		JMP   $D2CA	; remove element from $23 list
+D087:7E D2 F2		JMP   $D2F2	; install new element into $1F list
+D08A:7E D2 D2		JMP   $D2D2	; remove element from $1F list
+D08D:7E DB 2F		JMP   $DB2F	; shape blitter
+D090:7E DA 9E		JMP   $DA9E	; shape blitter
+D093:7E DA 61		JMP   $DA61	; shape blitter
+D096:7E D1 96		JMP   $D196
+D099:7E D4 FC		JMP   $D4FC	; screen/ctrl setup for stand up
+D09C:7E D5 03		JMP   $D503	; screen/ctrl setup for cocktail
+D09F:7E D5 C0		JMP   $D5C0
+D0A2:7E D5 12		JMP   $D512	; read byte of CMOS RAM into A
+D0A5:7E D5 23		JMP   $D523	; read byte of CMOS RAM into B
+D0A8:7E D5 21		JMP   $D521	; read two bytes of CMOS RAM into A,B
+D0AB:7E D5 2B		JMP   $D52B	; write byte in A to CMOS RAM
+D0AE:7E D5 39		JMP   $D539	; write byte in B to CMOS RAM
+D0B1:7E D5 37		JMP   $D537	; write two bytes in A,B to CMOS RAM
+D0B4:7E D5 E2		JMP   $D5E2
+D0B7:7E DE 59		JMP   $DE59
+D0BA:7E D6 5B		JMP   $D65B
+D0BD:7E D6 55		JMP   $D655	; update something in CMOS RAM
+D0C0:7E D1 8A		JMP   $D18A	; new colormap, init fonts, free lists
+D0C3:7E DA 0D		JMP   $DA0D	; start random color $A cycling
+D0C6:7E D5 D8		JMP   $D5D8	; convert BCD in A to binary
+
+* a song - extra man?
+D0C9:EF 01 20 1E 00
+
+D0CE:FF 01 20 0C 00 FF 01 20 20 00 FF
+D0D9:03 10 24 00 FF 01 20 27 00 FF 01 20 2D 00 FF 02
+D0E9:10 35 00 FF 01 20 3A 00 FF 01 20 3E 00
+
+
+************************************************************
+*
+*		COLD START AFTER INITIAL TESTS
+*
+
+D0F6:00 34 FF 35 00 34 00 3C
+D0FE:C8 0C C8 0E C8 04 C8 06
+
+D106:1A FF		ORC   #$FF	; turn off interrupts
+D108:10 CE BF 70	LDS   #$BF70	; initialize hardware stack
+D10C:86 98		LDA   #$98	; initialize direct page
+D10E:1F 8B		TFR   A,DP
+D110:86 01		LDA   #$01	; set rom read and normal screen
+D112:B7 C9 00		STA   $C900
+
+* The following code fiddles with some soft switches. The four soft
+* switch addresses are specified in the table at D0FE. A 16-bit zero is
+* written to the address first, then the associated value in the table at
+* D0F6 is written.
+
+D115:8E D0 F6		LDX   #$D0F6
+D118:4F			CLRA
+D119:5F			CLRB
+D11A:ED 98 08		STD   [8,X]	; zero a soft switch
+D11D:EC 81		LDD   ,X++
+D11F:ED 98 06		STD   [6,X]	; then store some value
+D122:8C D0 FE		CMPX  #$D0FE
+D125:26 F1		BNE   $D118
+
+D127:86 FF		LDA   #$FF	; silence the sound register
+D129:B7 C8 0E		STA   $C80E
+D12C:BD D0 12		JSR   $D012	; clear screen
+D12F:86 3F		LDA   #$3F	; wharp-wharp-wharp noise?
+D131:B7 C8 0E		STA   $C80E	;
+
+* Clear direct page ($9800 - $98FF) and work RAM ($9900 - $BF6F).
+ 
+D134:8E 98 00		LDX   #$9800
+D137:6F 80		CLR   ,X+
+D139:C6 39		LDB   #$39	; feed the watchdog
+D13B:F7 CB FF		STB   $CBFF
+D13E:8C BF 70		CMPX  #$BF70
+D141:26 F4		BNE   $D137
+
+* Set power-up values for some variables and fiddle some soft switches
+
+D143:CC A5 5A		LDD   #$A55A
+D146:DD 85		STD   $85
+D148:86 60		LDA   #$60
+D14A:97 41		STA   $41
+D14C:BD D0 99		JSR   $D099	; standup config
+D14F:BD D0 36		JSR   $D036	; init lists
+D152:8D 36		BSR   $D18A	; new colormap, init fonts, free lists
+D154:BD 6F 03		JSR   $6F03	; test cmos RAM?
+D157:CC FF FF		LDD   #$FFFF 
+D15A:DD 2F		STD   $2F	; clear current...
+D15C:DD 31		STD   $31	; ...and last button values
+D15E:86 02		LDA   #$02
+D160:97 40		STA   $40
+
+D162:8E CD 00		LDX   #$CD00
+D165:BD D0 A2		JSR   $D0A2	; read first byte of CMOS RAM
+D168:1F 89		TFR   A,B
+D16A:81 20		CMPA  #$20
+D16C:22 06		BHI   $D174	; wonder what CMOS format is...
+
+D16E:C4 0F		ANDB  #$0F
+D170:C1 09		CMPB  #$09
+D172:25 04		BCS   $D178
+
+D174:4F			CLRA
+D175:BD D0 AB		JSR   $D0AB	; write back CMOS RAM byte
+D178:97 51		STA   $51	; and write into shadow
+
+D17A:BD D0 54		JSR   $D054	; install startup thread
+D17D:77 A0				; thread's entry address
+
+D17F:86 2C		LDA   #$2C
+D181:B7 C8 0E		STA   $C80E	; make a sound
+
+D184:03 59		COM   $59	; (#$FF) turn on all runtime flags
+D186:1C 00		ANDC  #$00	; enable interrupts
+D188:20 0C		BRA   $D196
+
+
+**********************************************************
+*
+* Do some startup inits
+*
+
+D18A:BD D0 33		JSR   $D033	; install initial colormap
+D18D:BD 5F 9C		JSR   $5F9C	; initialize printing vars
+D190:BD 5B 40		JSR   $5B40	; init vars and $BBE4 list
+D193:7E D0 30		JMP   $D030	; init $9900 pool
+
+
+**********************************************************
+*
+*		THREAD DISPATCHER
+*
+
+* This is the heart of Robotron.
+* From this small loop all activity is dispatched.
+
+D196:8E 98 11		LDX   #$9811	; pick up the head of the thread list
+D199:9F 15		STX   $15	; and make current
+
+D19B:96 10		LDA   $10	; IRQ routine increments this...
+D19D:81 02		CMPA  #$02
+D19F:25 FA		BCS   $D19B
+
+D1A1:48			LSLA
+D1A2:48			LSLA
+D1A3:48			LSLA
+D1A4:9B 42		ADDA  $42
+D1A6:44			LSRA
+D1A7:97 42		STA   $42
+
+D1A9:0F 10		CLR   $10
+D1AB:BD D6 CD		JSR   $D6CD	; randomize
+D1AE:96 59		LDA   $59
+D1B0:85 04		BITA  #$04
+D1B2:26 03		BNE   $D1B7
+
+D1B4:BD 5B 49		JSR   $5B49
+D1B7:9E 33		LDX   $33	; first avail player start boot
+D1B9:26 0C		BNE   $D1C7
+
+D1BB:9E 37		LDX   $37	; second avail player start boot
+D1BD:27 17		BEQ   $D1D6
+
+D1BF:DC 39		LDD   $39
+D1C1:0F 37		CLR   $37
+D1C3:0F 38		CLR   $38
+D1C5:20 06		BRA   $D1CD
+
+D1C7:DC 35		LDD   $35
+D1C9:0F 33		CLR   $33
+D1CB:0F 34		CLR   $34
+D1CD:D4 59		ANDB  $59
+D1CF:26 E6		BNE   $D1B7
+
+D1D1:BD D0 57		JSR   $D057	; install thread
+D1D4:20 E1		BRA   $D1B7
+
+D1D6:DE 11		LDU   $11	; get list head
+D1D8:27 13		BEQ   $D1ED	; nothing in the list
+
+D1DA:6A 44		DEC   4,U	; time for this thread to fire?
+D1DC:26 0B		BNE   $D1E9	; nope, not this time 'round
+
+D1DE:DF 15		STU   $15	; yep, save current thread
+D1E0:6E D8 02		JMP   [2,U]	; exec thread; normally 'returns' to $D1E3
+
+
+*****************************************************
+*
+* Return from thread and reschedule
+*
+* On entry:
+*    A - delay until called again
+*    X - code entry point
+*
+
+D1E3:DE 15		LDU   $15	; get current object
+D1E5:A7 44		STA   4,U	; reset period
+D1E7:AF 42		STX   2,U	; and entry address
+D1E9:EE C4		LDU   ,U	; get link
+D1EB:26 ED		BNE   $D1DA	; continue for all threads
+
+* end of dispatching threads for this round
+
+D1ED:10 CE BF 70	LDS   #$BF70	; reset stack
+D1F1:20 A3		BRA   $D196	; and do it all again
+
+
+******************************************************************
+*
+* Return from thread and remove from activity
+*
+
+D1F3:9E 15		LDX   $15	; the thread to remove
+D1F5:10 CE BF 70	LDS   #$BF70	; reset stack
+D1F9:8D 1D		BSR   $D218	; free up current thread
+D1FB:33 84		LEAU  ,X
+D1FD:20 EA		BRA   $D1E9	; continue traversal
+
+
+******************************************************************
+*
+* Remove all threads that aren't about to fire
+*
+
+D1FF:34 12		PSHS  X,A
+D201:8E 98 11		LDX   #$9811	; address of active list head
+D204:AE 84		LDX   ,X	; next element
+D206:27 0E		BEQ   $D216	; end of list reached
+
+D208:9C 15		CMPX  $15	; same as current thread?
+D20A:27 F8		BEQ   $D204	; yes - ignore
+
+D20C:A6 05		LDA   5,X	; get period
+D20E:81 01		CMPA  #$01	; about to fire?
+D210:27 F2		BEQ   $D204	; yes, ignore
+
+D212:8D 04		BSR   $D218	; remove this thread
+D214:20 EE		BRA   $D204	; traverse list
+
+D216:35 92		PULS  PC,X,A
+
+
+*****************************************************
+*
+* Remove thread
+*
+* On entry:
+*   X - thread to remove
+* On exit:
+*   X - thread prior to the one removed
+*   (perfect for entering loop at point where next link is grabbed)
+*
+
+* U walks the list
+
+D218:34 46		PSHS  U,B,A
+D21A:CE 98 11		LDU   #$9811	; get active list head
+D21D:AC C4		CMPX  ,U	; is the next object the one?
+D21F:26 18		BNE   $D239	; no, keep looking
+
+D221:EC 84		LDD   ,X	; unlink X
+D223:ED C4		STD   ,U	; (store X's next as prev's next)
+D225:A6 06		LDA   6,X
+D227:27 06		BEQ   $D22F	; which free list to go into?
+
+D229:DC 1D		LDD   $1D	; link X into free list at $1D
+D22B:9F 1D		STX   $1D
+D22D:20 04		BRA   $D233
+
+D22F:DC 13		LDD   $13	; link X into free list at $13
+D231:9F 13		STX   $13
+D233:ED 84		STD   ,X
+D235:30 C4		LEAX  ,U	; X returned with object before X
+D237:35 C6		PULS  PC,U,B,A
+
+D239:EE C4		LDU   ,U	; next element
+D23B:26 E0		BNE   $D21D	; continue until end reached
+
+* Shouldn't ever get here
+D23D:8D 00		BSR   $D23F	; I assume this is to stack the address of the fatality, for debugging
+
+
+**********************************************************
+*
+* FATAL ERROR
+*
+
+D23F:1A 10		ORC   #$10	; turn off interrupts
+D241:20 FE		BRA   $D241	; loop forever
+
+
+**********************************************************
+*
+* Install new thread (from $B0E8 free list)
+*
+* On entry:
+*   X is entry address
+*   A is period
+* On exit:
+*   X is element
+*
+
+D243:34 62		PSHS  U,Y,A
+D245:DE 1D		LDU   $1D
+D247:26 01		BNE   $D24A	; into next instruction, which is...
+
+D249:BD D2 3F		JSR   $D23F	; SBCB  #$3F -- bug?
+
+D24C:10 AE C4		LDY   ,U	; unlink first element in free list
+D24F:10 9F 1D		STY   $1D
+D252:86 01		LDA   #$01	; type 1 element
+D254:A7 46		STA   6,U
+D256:A6 E4		LDA   ,S	; get back period
+D258:20 11		BRA   $D26B	; finish installing thread
+
+
+**********************************************************
+*
+* Install new thread (from $A9E0 free list)
+*
+* On entry:
+*   X is entry address
+*   A is period
+* On exit:
+*   X is element
+*
+
+D25A:34 62		PSHS  U,Y,A
+D25C:DE 13		LDU   $13	; pull next free element from head
+D25E:26 03		BNE   $D263
+
+D260:BD D2 3F		JSR   $D23F	; no more free elements, fatal!
+
+D263:10 AE C4		LDY   ,U	; unlink from free list
+D266:10 9F 13		STY   $13
+D269:6F 46		CLR   6,U	; type 0 element
+D26B:AF 42		STX   2,U	; store entry address
+D26D:A7 45		STA   5,U	; store period
+D26F:86 01		LDA   #$01
+D271:A7 44		STA   4,U
+D273:AE 9F 98 15	LDX   [$9815]	; link into list before current thread
+D277:EF 9F 98 15	STU   [$9815]
+D27B:AF C4		STX   ,U
+D27D:30 C4		LEAX  ,U	; return new element
+D27F:35 E2		PULS  PC,U,Y,A
+
+
+**********************************************************
+*
+* Install thread (from $A9E0 free list)
+*
+* On entry:
+*   entry address follows JSR; ret addr adjusted past it
+*   thread is installed with a period of 0
+* On exit:
+*   X points to thread entry
+*
+
+D281:34 42		PSHS  U,A
+D283:EE 63		LDU   3,S
+D285:37 10		PULU  X
+D287:EF 63		STU   3,S
+D289:86 00		LDA   #$00
+D28B:8D CD		BSR   $D25A
+D28D:35 C2		PULS  PC,U,A
+
+
+**********************************************************
+*
+* Pull free element from $9900 pool
+*
+* On exit:
+*    X - address of new element; element is zeroed
+*
+
+D28F:34 06		PSHS  B,A
+D291:9E 1B		LDX   $1B
+D293:26 03		BNE   $D298
+
+D295:BD D2 3F		JSR   $D23F	; fatal error
+
+D298:EC 84		LDD   ,X
+D29A:DD 1B		STD   $1B
+D29C:C6 02		LDB   #$02
+D29E:6F 85		CLR   B,X
+D2A0:5C			INCB
+D2A1:C1 18		CMPB  #$18
+D2A3:26 F9		BNE   $D29E
+
+D2A5:35 86		PULS  PC,B,A
+
+
+**********************************************************
+*
+* Remove element and put into $9900 pool
+*
+* On entry:
+*    X - element
+*    U - address of list head ($9817, $981F, etc.)
+*
+
+* Search list looking for element's previous link
+
+D2A7:AC C4		CMPX  ,U	; is this X's previous link?
+D2A9:26 10		BNE   $D2BB	; no, next
+
+* Unlink the element
+D2AB:10 AE D4		LDY   [,U]	; get X's next link
+D2AE:10 AF C4		STY   ,U	; set previous to point to next (link past X)
+D2B1:10 9E 1B		LDY   $1B	; add X to free list
+D2B4:9F 1B		STX   $1B
+D2B6:10 AF 84		STY   ,X
+D2B9:35 F0		PULS  PC,U,Y,X	; return
+
+D2BB:EE C4		LDU   ,U	; check next
+D2BD:26 E8		BNE   $D2A7	; linked list is terminated with a NULL pointer in the next field
+
+* Should never get here
+D2BF:BD D2 3F		JSR   $D23F	; fatal error
+
+
+**********************************************************
+*
+* Remove element from $21 list
+*
+* On entry:
+*    X - element to remove
+*
+
+D2C2:34 70		PSHS  U,Y,X
+D2C4:CE 98 21		LDU   #$9821	; $21 list
+D2C7:7E D0 4E		JMP   $D04E	; remove element
+
+
+**********************************************************
+*
+* Remove element from $23 list
+*
+* On entry:
+*    X - element to remove
+*
+
+D2CA:34 70		PSHS  U,Y,X
+D2CC:CE 98 23		LDU   #$9823	; $23 list
+D2CF:7E D0 4E		JMP   $D04E	; remove element
+
+
+**********************************************************
+*
+* Remove element from $1F list
+*
+* On entry:
+*    X - element to remove
+*
+
+D2D2:34 70		PSHS  U,Y,X
+D2D4:CE 98 1F		LDU   #$981F	; $1F list
+D2D7:7E D0 4E		JMP   $D04E	; remove element
+
+
+**********************************************************
+*
+* Install new element into $21 list
+*
+* On exit:
+*    X - address of new element; element is zeroed
+*
+
+D2DA:34 06		PSHS  B,A
+D2DC:BD D0 51		JSR   $D051	; pull free element from $9900 pool
+D2DF:DC 21		LDD   $21	; link into $21 list
+D2E1:9F 21		STX   $21
+D2E3:ED 84		STD   ,X
+D2E5:35 86		PULS  PC,B,A
+
+
+**********************************************************
+*
+* Install new element into $23 list
+*
+* On exit:
+*    X - address of new element; element is zeroed
+*
+
+D2E7:34 06		PSHS  B,A
+D2E9:BD D0 51		JSR   $D051	; pull free element from $9900 pool
+D2EC:DC 23		LDD   $23	; link into $21 list
+D2EE:9F 23		STX   $23
+D2F0:20 F1		BRA   $D2E3
+
+
+**********************************************************
+*
+* Install new element into $1F list
+*
+* On exit:
+*    X - address of new element; element is zeroed
+*
+
+D2F2:34 06		PSHS  B,A
+D2F4:BD D0 51		JSR   $D051	; pull free element from $9900 pool
+D2F7:DC 1F		LDD   $1F
+D2F9:9F 1F		STX   $1F
+D2FB:20 E6		BRA   $D2E3
+
+
+**********************************************************
+*
+*
+
+D2FD:34 06		PSHS  B,A
+D2FF:BD D0 51		JSR   $D051	; pull free element from $9900 pool
+D302:DC 17		LDD   $17
+					; is this a bug? should there be a STX $17 here?
+D304:20 DD		BRA   $D2E3
+
+
+**********************************************************
+*
+* Remove shape from shapes list
+*
+* On entry:
+*    X - shape
+*
+D306:34 70		PSHS  U,Y,X
+D308:CE 98 17		LDU   #$9817
+D30B:7E D0 4E		JMP   $D04E	; remove element
+
+
+**********************************************************
+*
+*
+
+D30E:10 8E AE D9	LDY   #$AED9
+D312:BD D0 54		JSR   $D054	; install thread
+D315:D3 68				; thread's entry address
+D317:10 AF 09		STY   9,X
+D31A:39			RTS
+
+
+**********************************************************
+*
+* Remove shape from shapes list and erase it on screen
+*
+* On entry:
+*    X - shape to remove
+*
+D31B:8D E9		BSR   $D306	; remove from list
+D31D:7E D0 15		JMP   $D015	; erase shape
+
+
+**********************************************************
+*
+* Remove shape and remove its thread
+*
+* On entry:
+*    X - shape to remove
+*
+D320:34 10		PSHS  X
+D322:8D F7		BSR   $D31B	; remove shape from list and erase
+D324:AE 06		LDX   6,X
+D326:BD D0 5D		JSR   $D05D	; remove thread
+D329:35 90		PULS  PC,X
+
+
+**********************************************************
+*
+* Install new shape and thread
+*
+* Parameters follow JSR in code:
+*    0,1 - code entry point
+*    2,3 - shape table
+*    4,5 - another code entry point (death?)
+*    6,7 - ?
+*
+* On return:
+*    U - thread
+*    X - shape
+*
+
+D32B:34 26		PSHS  Y,B,A
+D32D:9E 1B		LDX   $1B
+D32F:27 2E		BEQ   $D35F
+
+D331:9E 13		LDX   $13
+D333:27 2A		BEQ   $D35F
+
+D335:4F			CLRA
+D336:EE 64		LDU   4,S	; get address of parameters (skip over Y,B,A pushed onto stack)
+D338:37 10		PULU  X		; thread's entry point
+D33A:BD D0 57		JSR   $D057	; install thread
+D33D:31 84		LEAY  ,X
+D33F:BD D0 6F		JSR   $D06F	; install shape into $9817 list?
+D342:EC C1		LDD   ,U++
+D344:ED 88 14		STD   20,X
+D347:ED 02		STD   2,X
+D349:37 06		PULU  B,A
+D34B:ED 08		STD   8,X
+D34D:EF 64		STU   4,S	; fix return address
+D34F:33 A4		LEAU  ,Y
+D351:EF 06		STU   6,X	; store pointer to thread
+D353:AF 47		STX   7,U	; store pointer to shape
+D355:4F			CLRA
+D356:5F			CLRB
+D357:ED 88 10		STD   16,X	; zero y
+D35A:ED 0E		STD   14,X	; zero x
+D35C:43			COMA		; set the carry, indicates success
+D35D:35 A6		PULS  PC,Y,B,A
+
+D35F:EE 64		LDU   4,S	; get address of parameters
+D361:33 48		LEAU  8,U	; skip over parms
+D363:EF 64		STU   4,S	; put back onto stack as return address
+D365:4F			CLRA		; clear the carry, indicates shape not installed
+D366:35 A6		PULS  PC,Y,B,A
+
+
+**********************************************************
+*
+* On entry:
+*   U -
+*
+
+D368:96 F2		LDA   $F2
+D36A:26 47		BNE   $D3B3
+
+D36C:0C F2		INC   $F2
+D36E:86 03		LDA   #$03
+D370:AE 49		LDX   9,U
+D372:30 89 28 57	LEAX  10327,X
+D376:AF 49		STX   9,U
+D378:A7 47		STA   7,U
+D37A:86 08		LDA   #$08
+D37C:8E D3 82		LDX   #$D382	; 'return' address
+D37F:7E D0 66		JMP   $D066
+
+D382:B6 C8 04		LDA   $C804
+D385:81 A1		CMPA  #$A1	; move up, fire down, start 2
+D387:27 0A		BEQ   $D393
+
+D389:81 58		CMPA  #$58
+D38B:27 ED		BEQ   $D37A
+
+D38D:6A 47		DEC   7,U
+D38F:26 E9		BNE   $D37A
+
+D391:20 1E		BRA   $D3B1
+
+D393:86 03		LDA   #$03
+D395:A7 47		STA   7,U
+D397:86 08		LDA   #$08
+D399:8E D3 9F		LDX   #$D39F
+D39C:7E D0 66		JMP   $D066
+
+D39F:B6 C8 04		LDA   $C804
+D3A2:81 42		CMPA  #$42	; move down, fire up
+D3A4:26 03		BNE   $D3A9
+
+D3A6:6E D8 09		JMP   [9,U]
+
+D3A9:81 A1		CMPA  #$A1
+D3AB:27 EA		BEQ   $D397
+
+D3AD:6A 47		DEC   7,U
+D3AF:26 E6		BNE   $D397
+
+D3B1:0F F2		CLR   $F2
+D3B3:7E D0 63		JMP   $D063	; remove thread
+
+
+**********************************************************
+*
+*
+
+D3B6:34 07		PSHS  B,A,CC
+D3B8:1A FF		ORC   #$FF
+D3BA:86 3F		LDA   #$3F
+D3BC:B7 C8 0E		STA   $C80E	; halt current sound
+D3BF:53			COMB
+D3C0:C4 3F		ANDB  #$3F
+D3C2:F7 C8 0E		STB   $C80E	; make that B sound
+D3C5:35 87		PULS  PC,B,A,CC
+
+
+**********************************************************
+*
+* Play a song with priority
+*
+* On entry:
+*    D points to first note of song
+*
+* Song looks like this:
+*  0 - priority
+*  1 - number of repetitions
+*  2 - one repetition's duration
+*  3 - sound number
+*  ... repeat 1-3 (this is one note)
+*  0 - end of song
+*
+
+D3C7:34 17		PSHS  X,B,A,CC
+D3C9:1F 01		TFR   D,X
+D3CB:A6 84		LDA   ,X	; get song's priority
+D3CD:91 56		CMPA  $56
+D3CF:25 0D		BCS   $D3DE	; not high enough priority
+
+D3D1:97 56		STA   $56	; store new song's priority
+D3D3:30 1E		LEAX  -2,X	; adjust for start of song playing routine
+D3D5:1A 10		ORC   #$10	; turn off interrupts
+D3D7:9F 54		STX   $54	; store song
+D3D9:CC 01 01		LDD   #$0101	; play first note ASAP
+D3DC:DD 57		STD   $57
+D3DE:35 97		PULS  PC,X,B,A,CC
+
+
+**********************************************************
+*
+* CALLED FROM IRQ HANDLER
+*
+
+* continue playing current song
+
+D3E0:96 57		LDA   $57	; any song playing?
+D3E2:27 1E		BEQ   $D402	; nope
+
+D3E4:0A 57		DEC   $57	; yep, see if time for a sound
+D3E6:26 1A		BNE   $D402	; not yet
+
+D3E8:9E 54		LDX   $54	; yes, get current note
+D3EA:0A 58		DEC   $58	; repetitions done?
+D3EC:26 0E		BNE   $D3FC	; no, keep playing current note
+
+D3EE:30 03		LEAX  3,X	; advance to next note
+D3F0:9F 54		STX   $54
+D3F2:A6 84		LDA   ,X	; get duration
+D3F4:26 04		BNE   $D3FA
+
+D3F6:97 56		STA   $56	; end of song; clear priority
+D3F8:20 08		BRA   $D402
+
+D3FA:97 58		STA   $58	; save back repetitions
+D3FC:EC 01		LDD   1,X	; get duration and sound
+D3FE:97 57		STA   $57	; save duration
+D400:8D B4		BSR   $D3B6	; play a sound
+
+* slam switch stuff of dubious value
+
+D402:B6 C8 0C		LDA   $C80C	; button stuff
+D405:85 40		BITA  #$40	; slam switch?!
+D407:27 04		BEQ   $D40D
+
+D409:86 3C		LDA   #$3C
+D40B:97 4B		STA   $4B
+D40D:96 4B		LDA   $4B
+D40F:27 02		BEQ   $D413
+
+D411:0A 4B		DEC   $4B
+D413:96 4C		LDA   $4C
+D415:27 02		BEQ   $D419
+
+D417:0A 4C		DEC   $4C
+D419:96 4E		LDA   $4E
+D41B:27 02		BEQ   $D41F
+
+D41D:0A 4E		DEC   $4E
+D41F:96 4D		LDA   $4D
+D421:27 02		BEQ   $D425
+
+D423:0A 4D		DEC   $4D
+D425:96 59		LDA   $59
+D427:2A 24		BPL   $D44D
+
+D429:96 CE		LDA   $CE
+D42B:26 6A		BNE   $D497
+
+D42D:96 31		LDA   $31
+D42F:9A 32		ORA   $32
+D431:43			COMA
+D432:D6 31		LDB   $31
+D434:D7 32		STB   $32
+
+* game start check
+
+D436:F6 C8 04		LDB   $C804	; button state
+D439:D7 31		STB   $31	; save in current button shadow
+D43B:94 31		ANDA  $31	; see what buttons have changed
+D43D:84 30		ANDA  #$30	; $30 is a mask for player 1 & 2 start
+D43F:27 0C		BEQ   $D44D
+
+D441:8E 26 CC		LDX   #$26CC	; 1 player start vector
+D444:85 10		BITA  #$10	; player 1 start button bit
+D446:26 03		BNE   $D44B	; it's pressed
+
+D448:8E 26 CF		LDX   #$26CF	; 2 player start vector
+D44B:8D 3B		BSR   $D488	; install start vector
+D44D:96 CE		LDA   $CE
+D44F:26 46		BNE   $D497
+
+D451:96 2F		LDA   $2F
+D453:9A 30		ORA   $30
+D455:43			COMA
+D456:D6 2F		LDB   $2F
+D458:D7 30		STB   $30
+D45A:F6 C8 0C		LDB   $C80C
+D45D:C4 3F		ANDB  #$3F
+D45F:D7 2F		STB   $2F
+D461:95 2F		BITA  $2F
+D463:27 32		BEQ   $D497
+
+D465:8E 00 78		LDX   #$0078
+D468:30 1F		LEAX  -1,X	; kill time
+D46A:26 FC		BNE   $D468
+
+D46C:F6 C8 0C		LDB   $C80C
+D46F:D4 2F		ANDB  $2F
+D471:D7 2F		STB   $2F
+D473:94 2F		ANDA  $2F
+D475:27 20		BEQ   $D497
+
+D477:8E D4 96		LDX   #$D496
+D47A:30 02		LEAX  2,X
+D47C:44			LSRA
+D47D:24 FB		BCC   $D47A
+
+D47F:AE 84		LDX   ,X
+D481:8D 05		BSR   $D488
+D483:86 01		LDA   #$01
+D485:A7 42		STA   2,U
+D487:39			RTS
+
+
+* install start vector in guaranteed thread?
+D488:CE 98 33		LDU   #$9833
+D48B:EC C4		LDD   ,U
+D48D:27 02		BEQ   $D491	; NIL addr field
+
+D48F:33 44		LEAU  4,U	; non-nil: advance 4 bytes
+D491:AF C4		STX   ,U	; install x
+D493:6F 42		CLR   2,U
+D495:6F 43		CLR   3,U
+D497:39			RTS
+
+D498:00 00 F0 03 D6 15 E3 DF D6 0C D6 1E 00 00 00 00  '................'
+D4A8:20 52 4F 42 4F 54 52 4F 4E 3A 20 32 30 38 34 20  ' ROBOTRON: 2084 '
+D4B8:28 54 4D 29 20 20 43 4F 50 59 52 49 47 48 54 20  '(TM)  COPYRIGHT '
+D4C8:31 39 38 32 20 57 49 4C 4C 49 41 4D 53 20 45 4C  '1982 WILLIAMS EL'
+D4D8:45 43 54 52 4F 4E 49 43 53 20 49 4E 43 2E 20 20  'ECTRONICS INC.  '
+D4E8:41 4C 4C 20 52 49 47 48 54 53 20 52 45 53 45 52  'ALL RIGHTS RESER'
+D4F8:56 45 44 20						    'VED '
+
+
+************************************************************
+*
+* screen, control MUX initialization for stand-up version
+*
+
+D4FC:34 06		PSHS  B,A
+D4FE:CC 01 3C		LDD   #$013C
+D501:20 05		BRA   $D508
+
+
+************************************************************
+*
+* screen, control MUX initialization for cocktail version
+*
+
+D503:34 06		PSHS  B,A
+D505:CC 03 34		LDD   #$0334
+D508:97 45		STA   $45
+D50A:B7 C9 00		STA   $C900
+D50D:F7 C8 07		STB   $C807
+D510:35 86		PULS  PC,B,A
+
+
+**********************************************************
+*
+* read byte of CMOS RAM into A
+*
+* On entry:
+*   X is RAM address
+* On exit:
+*   X is two bytes further
+*   A is byte
+*
+
+* CMOS RAM is 4 bits wide, so gotta read twice to build a byte
+
+D512:A6 01		LDA   1,X	; get lsnybble
+D514:84 0F		ANDA  #$0F
+D516:34 02		PSHS  A
+D518:A6 81		LDA   ,X++	; get msnybble
+D51A:48			LSLA
+D51B:48			LSLA
+D51C:48			LSLA
+D51D:48			LSLA
+D51E:AB E0		ADDA  ,S+	; combine 'em
+D520:39			RTS
+
+
+**********************************************************
+*
+* Read two bytes of CMOS RAM into A,B
+*
+* On entry:
+*   X is RAM address
+* On exit:
+*   X is four bytes further
+*   A is first byte
+*   B is second byte
+*
+
+D521:8D EF		BSR   $D512
+
+* fall into second read
+
+
+**********************************************************
+*
+* Read byte of CMOS RAM into B
+*
+* On entry:
+*   X is RAM address
+* On exit:
+*   X is two bytes further
+*   B is byte
+*
+
+D523:34 02		PSHS  A
+D525:8D EB		BSR   $D512
+D527:1F 89		TFR   A,B
+D529:35 82		PULS  PC,A
+
+
+**********************************************************
+*
+* Write byte in A to CMOS RAM
+*
+* On entry:
+*   X is RAM address
+*   A is byte
+* On exit:
+*   X is two bytes further
+*
+
+* CMOS RAM is 4 bits wide, so gotta write twice to build a byte
+
+D52B:34 02		PSHS  A
+D52D:A7 01		STA   1,X	; write lsnybble
+D52F:44			LSRA
+D530:44			LSRA
+D531:44			LSRA
+D532:44			LSRA
+D533:A7 81		STA   ,X++	; and msnybble
+D535:35 82		PULS  PC,A
+
+
+**********************************************************
+*
+* Write two bytes in A,B to CMOS RAM
+*
+* On entry:
+*   X is RAM address
+*   A is first byte
+*   B is second byte
+* On exit:
+*   X is four bytes further
+*
+
+D537:8D F2		BSR   $D52B
+
+* fall into second write
+
+
+**********************************************************
+*
+* Write byte in B to CMOS RAM
+*
+* On entry:
+*   X is RAM address
+*   B is byte
+* On exit:
+*   X is two bytes further
+*
+
+D539:34 02		PSHS  A
+D53B:1F 98		TFR   B,A
+D53D:8D EC		BSR   $D52B
+D53F:35 82		PULS  PC,A
+
+
+**********************************************************
+*
+*
+
+D541:34 12		PSHS  X,A
+D543:9B 51		ADDA  $51
+D545:19			DAA
+D546:24 02		BCC   $D54A
+
+D548:86 99		LDA   #$99
+D54A:97 51		STA   $51
+D54C:8E CD 00		LDX   #$CD00
+D54F:BD D0 AB		JSR   $D0AB
+D552:35 92		PULS  PC,X,A
+
+
+**********************************************************
+*
+*
+
+D554:34 16		PSHS  X,B,A
+D556:C6 03		LDB   #$03
+D558:20 0A		BRA   $D564
+
+D55A:34 16		PSHS  X,B,A
+D55C:C6 02		LDB   #$02
+D55E:20 04		BRA   $D564
+
+D560:34 16		PSHS  X,B,A
+D562:C6 01		LDB   #$01
+
+D564:BD D0 BD		JSR   $D0BD	; update something in CMOS RAM
+D567:58			LSLB
+D568:8E CC 04		LDX   #$CC04
+D56B:3A			ABX
+D56C:BD D0 A5		JSR   $D0A5
+D56F:BD D0 B4		JSR   $D0B4
+D572:96 4F		LDA   $4F
+D574:34 04		PSHS  B
+D576:AB E4		ADDA  ,S
+D578:97 4F		STA   $4F
+D57A:96 50		LDA   $50
+D57C:AB E0		ADDA  ,S+
+D57E:97 50		STA   $50
+D580:8E CC 10		LDX   #$CC10
+D583:BD D0 A5		JSR   $D0A5
+D586:BD D0 B4		JSR   $D0B4
+D589:34 04		PSHS  B
+D58B:A1 E0		CMPA  ,S+
+D58D:24 02		BCC   $D591
+
+D58F:35 96		PULS  PC,X,B,A
+
+
+**********************************************************
+*
+*
+
+D591:8E CC 0C		LDX   #$CC0C
+D594:BD D0 A5		JSR   $D0A5
+D597:BD D0 B4		JSR   $D0B4
+D59A:8D 24		BSR   $D5C0
+D59C:34 02		PSHS  A
+D59E:D7 50		STB   $50
+D5A0:8E CC 0E		LDX   #$CC0E
+D5A3:BD D0 A5		JSR   $D0A5
+D5A6:96 4F		LDA   $4F
+D5A8:8D 38		BSR   $D5E2
+D5AA:8D 14		BSR   $D5C0
+D5AC:4D			TSTA
+D5AD:27 04		BEQ   $D5B3
+
+D5AF:0F 50		CLR   $50
+D5B1:0F 4F		CLR   $4F
+D5B3:AB E0		ADDA  ,S+
+D5B5:19			DAA
+D5B6:C6 04		LDB   #$04
+D5B8:BD D0 BA		JSR   $D0BA
+D5BB:BD D5 41		JSR   $D541
+D5BE:35 96		PULS  PC,X,B,A
+
+
+**********************************************************
+*
+*
+
+D5C0:34 04		PSHS  B
+D5C2:5D			TSTB
+D5C3:26 03		BNE   $D5C8
+
+D5C5:4F			CLRA
+D5C6:35 84		PULS  PC,B
+
+D5C8:1E 89		EXG   A,B
+D5CA:86 99		LDA   #$99
+D5CC:8B 01		ADDA  #$01
+D5CE:19			DAA
+D5CF:E0 E4		SUBB  ,S
+D5D1:24 F9		BCC   $D5CC
+
+D5D3:EB E0		ADDB  ,S+
+D5D5:39			RTS
+
+D5D6:D8 3E				; pointer to easter egg text
+
+
+**********************************************************
+*
+* convert BCD in A to binary
+*
+
+D5D8:34 04		PSHS  B
+D5DA:1F 89		TFR   A,B
+D5DC:8D 04		BSR   $D5E2
+D5DE:1F 98		TFR   B,A
+D5E0:35 84		PULS  PC,B
+
+
+**********************************************************
+*
+* convert BCD in B to binary
+*
+
+D5E2:34 02		PSHS  A
+D5E4:4F			CLRA
+D5E5:C1 10		CMPB  #$10
+D5E7:25 06		BCS   $D5EF
+
+D5E9:8B 0A		ADDA  #$0A
+D5EB:C0 10		SUBB  #$10
+D5ED:20 F6		BRA   $D5E5
+
+D5EF:34 02		PSHS  A
+D5F1:EB E0		ADDB  ,S+
+D5F3:35 82		PULS  PC,A
+
+
+**********************************************************
+*
+* convert binary in A to BCD
+*
+
+D5F5:34 04		PSHS  B
+D5F7:1F 89		TFR   A,B
+D5F9:4F			CLRA
+D5FA:C1 0A		CMPB  #$0A
+D5FC:25 07		BCS   $D605
+
+D5FE:8B 10		ADDA  #$10
+D600:19			DAA
+D601:C0 0A		SUBB  #$0A
+D603:20 F5		BRA   $D5FA
+
+D605:34 04		PSHS  B
+D607:AB E0		ADDA  ,S+
+D609:19			DAA
+D60A:35 84		PULS  PC,B
+
+
+**********************************************************
+*
+*
+
+D60C:8E 98 4C		LDX   #$984C
+D60F:10 8E D5 60	LDY   #$D560
+D613:20 10		BRA   $D625
+
+D615:8E 98 4D		LDX   #$984D
+D618:10 8E D5 54	LDY   #$D554
+D61C:20 07		BRA   $D625
+
+D61E:8E 98 4E		LDX   #$984E
+D621:10 8E D5 5A	LDY   #$D55A
+
+D625:96 4B		LDA   $4B
+D627:26 27		BNE   $D650
+
+D629:A6 84		LDA   ,X
+D62B:26 23		BNE   $D650
+
+D62D:86 16		LDA   #$16
+D62F:A7 84		STA   ,X
+D631:10 AF 49		STY   9,U
+D634:86 0A		LDA   #$0A
+D636:8E D6 3C		LDX   #$D63C
+D639:7E D0 66		JMP   $D066
+
+D63C:96 4B		LDA   $4B
+D63E:26 10		BNE   $D650
+
+D640:86 05		LDA   #$05
+D642:D6 84		LDB   $84
+D644:C4 07		ANDB  #$07
+D646:3D			MUL
+D647:C3 D0 CE		ADDD  #$D0CE
+D64A:BD D0 4B		JSR   $D04B	; play a song
+D64D:AD D8 09		JSR   [9,U]
+D650:7E D0 63		JMP   $D063	; remove thread
+
+
+D653:5E 31				; secret address used by easter egg
+
+
+**********************************************************
+*
+* Update something in CMOS RAM
+*
+
+D655:34 16		PSHS  X,B,A
+D657:86 01		LDA   #$01
+D659:20 02		BRA   $D65D
+
+D65B:34 16		PSHS  X,B,A
+D65D:C4 0F		ANDB  #$0F
+D65F:58			LSLB		; multiply B by 6
+D660:34 04		PSHS  B
+D662:58			LSLB
+D663:EB E0		ADDB  ,S+
+D665:8E CC FC		LDX   #$CCFC
+D668:3A			ABX		; index into CMOS RAM
+D669:BD D0 A5		JSR   $D0A5	; get 2 bytes in A,B
+D66C:34 04		PSHS  B		; save b
+D66E:BD D0 A5		JSR   $D0A5	; get 2 bytes in A,B
+D671:34 04		PSHS  B		; save
+D673:BD D0 A5		JSR   $D0A5	; get 2 bytes in A,B
+D676:34 04		PSHS  B		; save
+D678:AB E4		ADDA  ,S	; sum A and B
+D67A:19			DAA
+D67B:A7 E4		STA   ,S	; store at TOS
+D67D:A6 61		LDA   1,S	; get 2nd B byte
+D67F:89 00		ADCA  #$00	; ? why add 0? to add in carry?
+D681:19			DAA
+D682:A7 61		STA   1,S
+D684:A6 62		LDA   2,S
+D686:89 00		ADCA  #$00
+D688:19			DAA
+D689:30 1A		LEAX  -6,X
+D68B:BD D0 AB		JSR   $D0AB	; write A to CMOS RAM
+D68E:35 04		PULS  B
+D690:35 02		PULS  A
+D692:BD D0 B1		JSR   $D0B1	; write A,B to CMOS RAM
+D695:35 02		PULS  A
+D697:35 96		PULS  PC,X,B,A
+
+
+**********************************************************
+*
+* Get address of current player data
+*
+* On exit:
+*    X - set to $BDE4 for player 1 or $BE20 for player 2
+*
+
+D699:34 02		PSHS  A
+D69B:96 3F		LDA   $3F
+D69D:8E BD E4		LDX   #$BDE4
+D6A0:4A			DECA
+D6A1:27 03		BEQ   $D6A6
+
+D6A3:8E BE 20		LDX   #$BE20
+D6A6:35 82		PULS  PC,A
+
+
+**********************************************************
+*
+* Get address of player data
+*
+* On entry:
+*    A - 1 or 2
+*
+* On exit:
+*    X - set to $BDE4 for player 1 or $BE20 for player 2
+*
+
+D6A8:34 02		PSHS  A
+D6AA:20 F1		BRA   $D69D
+
+
+**********************************************************
+*
+* Generate a random number, multiplied
+*
+* On entry:
+*    A - multiplier
+*
+* On exit:
+*    A - (random number * multiplier) + 1
+
+D6AC:34 04		PSHS  B
+D6AE:1F 89		TFR   A,B
+D6B0:8D 1B		BSR   $D6CD
+D6B2:3D			MUL
+D6B3:4C			INCA
+D6B4:35 84		PULS  PC,B
+
+
+**********************************************************
+*
+* Pick a random number from 1 to <max>
+*
+* On entry:
+*   A is maximum value
+*
+* On exit:
+*   A is a random number from 1 to <max>
+*
+
+D6B6:34 02		PSHS  A
+D6B8:8D 13		BSR   $D6CD
+D6BA:A1 E4		CMPA  ,S
+D6BC:23 03		BLS   $D6C1
+
+D6BE:44			LSRA
+D6BF:20 F9		BRA   $D6BA
+D6C1:4D			TSTA
+D6C2:26 01		BNE   $D6C5
+
+D6C4:4C			INCA
+D6C5:32 61		LEAS  1,S
+D6C7:39			RTS
+
+
+**********************************************************
+*
+* Generate two bytes of randomness
+*
+* On exit:
+*    A - random number from $84
+*    B - random number from $86
+*
+
+D6C8:8D 03		BSR   $D6CD
+D6CA:D6 86		LDB   $86
+D6CC:39			RTS
+
+
+**********************************************************
+*
+* Random number generator
+*
+* On exit:
+*   A - random number (0-255)
+*   Also stored in $84
+*
+
+D6CD:34 04		PSHS  B
+D6CF:D6 84		LDB   $84	; last random number
+D6D1:86 03		LDA   #$03
+D6D3:3D			MUL
+D6D4:CB 11		ADDB  #$11
+D6D6:96 86		LDA   $86
+D6D8:44			LSRA
+D6D9:44			LSRA
+D6DA:44			LSRA
+D6DB:98 86		EORA  $86
+D6DD:44			LSRA
+D6DE:06 85		ROR   $85
+D6E0:06 86		ROR   $86
+D6E2:DB 86		ADDB  $86
+D6E4:D9 85		ADCB  $85
+D6E6:D7 84		STB   $84
+D6E8:96 84		LDA   $84
+D6EA:35 84		PULS  PC,B
+
+
+************************************************************
+*
+* Initialize $A9E0 and $B0E8 free lists
+*
+
+D6EC:34 56		PSHS  U,X,B,A
+D6EE:4F			CLRA		; to zero last link
+D6EF:5F			CLRB
+
+* Init elements of $A9E0 free list.
+* List has 120 elements, each 15 bytes.
+* First word of each element is the link to the next element.
+
+* Active list head pointer is at $11.
+* Free   list head pointer is at $13.
+
+* Set head of free list to first elem of this list. Zero head of
+* active list (ie, no active elements).
+
+D6F0:8E A9 E0		LDX   #$A9E0	; base of list
+D6F3:CE 97 6F		LDU   #$976F	; part of SNEAKY CHECKSUM below
+D6F6:9F 13		STX   $13	; save base as head of free list
+D6F8:30 0F		LEAX  15,X
+D6FA:AF 11		STX   -15,X
+D6FC:8C B0 D9		CMPX  #$B0D9
+D6FF:26 F7		BNE   $D6F8
+
+D701:ED 84		STD   ,X	; zero last link
+D703:DD 11		STD   $11	; zero active list head
+
+* Init elements of $B0E8 list.
+* List has 20 elements, each 31 bytes.
+* First word of each element is the link to the next element.
+
+* Free   list head pointer is at $1D.
+
+D705:8E B0 E8		LDX   #$B0E8
+D708:9F 1D		STX   $1D
+D70A:30 88 1F		LEAX  31,X
+D70D:AF 88 E1		STX   -31,X
+D710:8C B3 35		CMPX  #$B335
+D713:26 F5		BNE   $D70A
+
+D715:ED 84		STD   ,X	; zero last link
+D717:8E 98 11		LDX   #$9811	; point current object to active head
+D71A:9F 15		STX   $15
+
+* SNEAKY CHECKSUM
+* checksum every 16th byte in lower ROMs beginning with byte 7. Store
+* result in $98F3.
+
+D71C:C6 07		LDB   #$07
+D71E:1F 01		TFR   D,X	; X = 7
+D720:AB 84		ADDA  ,X	; A += *X
+D722:30 88 10		LEAX  16,X	; X += 16
+D725:8C 89 35		CMPX  #$8935
+D728:25 F6		BCS   $D720
+
+D72A:A7 C9 01 84	STA   388,U	; $98F3
+D72E:35 D6		PULS  PC,U,X,B,A
+
+
+************************************************************
+*
+* Halt machine with easter egg message
+*
+
+D730:BD D0 60		JSR   $D060	; clear out deadwood threads
+D733:86 FF		LDA   #$FF
+D735:97 59		STA   $59
+D737:86 01		LDA   #$01
+D739:8E D7 3F		LDX   #$D73F
+D73C:7E D0 66		JMP   $D066	; 'return' to D73F in 1 tick
+
+D73F:BD D0 12		JSR   $D012	; clear screen
+D742:BD 5F 9C		JSR   $5F9C	; initialize printing vars
+D745:C6 7F		LDB   #$7F
+D747:D7 01		STB   $01	; -- no known reason for this (color?)
+D749:10 BE D5 D6	LDY   $D5D6	; ($D83E)
+D74D:31 A5		LEAY  B,Y	; ($D8BD) address of easter egg text
+D74F:A6 A0		LDA   ,Y+	; get next character to draw
+D751:27 2C		BEQ   $D77F	; end of text
+
+D753:81 02		CMPA  #$02	; check for button press?
+D755:26 09		BNE   $D760
+
+D757:B6 C8 04		LDA   $C804
+D75A:85 40		BITA  #$40	; some button pressed? (perhaps advance)
+D75C:27 30		BEQ   $D78E	; yes, reset
+
+D75E:20 EF		BRA   $D74F
+
+D760:81 01		CMPA  #$01	; new character location on screen?
+D762:26 06		BNE   $D76A	; no, must be a real character
+
+D764:AE A1		LDX   ,Y++	; get destination screen address
+D766:0F D0		CLR   $D0	; start on first nybble
+D768:20 E5		BRA   $D74F
+
+D76A:8B 2E		ADDA  #$2E	; make it ASCII
+D76C:CE D7 4F		LDU   #$D74F	; drawing routine returns to top of loop
+D76F:34 40		PSHS  U
+D771:FE D6 53		LDU   $D653	; ($5E31)
+D774:F6 D7 ED		LDB   $D7ED	; ($76)
+D777:33 C5		LEAU  B,U
+D779:33 C5		LEAU  B,U
+D77B:33 C5		LEAU  B,U
+D77D:6E C4		JMP   ,U	; draw a 7 pixel high character
+
+D77F:86 01		LDA   #$01
+D781:8E D7 87		LDX   #$D787
+D784:7E D0 66		JMP   $D066	; 'return' to D787 in 1 tick
+
+D787:B6 C8 04		LDA   $C804
+D78A:85 40		BITA  #$40	; tests for fire up button?
+D78C:26 F1		BNE   $D77F
+
+D78E:BD D0 12		JSR   $D012	; clear screen
+D791:6E 9F EF FE	JMP   [$EFFE]	; reset (!!)
+
+
+**********************************************************
+*
+* install the initial color map
+*
+
+D795:8E DA 51		LDX   #$DA51	; addr of initial colormap
+D798:CE 98 00		LDU   #$9800	; colormap shadow
+D79B:C6 10		LDB   #$10	; 16 entries
+D79D:A6 80		LDA   ,X+
+D79F:A7 C0		STA   ,U+
+D7A1:5A			DECB
+D7A2:26 F9		BNE   $D79D
+
+D7A4:39			RTS
+
+
+**********************************************************
+*
+* Initialize $9900 pool
+*
+
+D7A5:34 17		PSHS  X,B,A,CC
+D7A7:1A FF		ORC   #$FF	; disable interrupts
+
+* Init elements of $9900 pool.
+* List has 180 elements, each 24 bytes.
+* First word of each element is the link to the next element.
+
+* Free list head pointer is at $1B.
+* Set head of free list to first elem of this list.
+
+D7A9:8E 99 00		LDX   #$9900	; base of list
+D7AC:9F 1B		STX   $1B	; store in free list head
+D7AE:30 88 18		LEAX  24,X
+D7B1:AF 88 E8		STX   -24,X
+D7B4:8C A9 C8		CMPX  #$A9C8
+D7B7:26 F5		BNE   $D7AE
+
+D7B9:4F			CLRA
+D7BA:5F			CLRB
+D7BB:ED 84		STD   ,X	; zero last link
+
+D7BD:DD 21		STD   $21	; clear the various head pointers
+D7BF:DD 17		STD   $17
+D7C1:DD 19		STD   $19	; (not sure if this one's a head pointer)
+D7C3:DD 23		STD   $23
+D7C5:DD 1F		STD   $1F
+D7C7:35 97		PULS  PC,X,B,A,CC
+
+
+**********************************************************
+*
+*
+
+D7C9:DD 7C		STD   $7C
+D7CB:E3 C4		ADDD  ,U
+D7CD:DD 7E		STD   $7E
+D7CF:20 17		BRA   $D7E8
+
+D7D1:EC 04		LDD   4,X
+D7D3:27 13		BEQ   $D7E8
+
+D7D5:91 7E		CMPA  $7E
+D7D7:24 0F		BCC   $D7E8
+
+D7D9:D1 7F		CMPB  $7F
+D7DB:24 0B		BCC   $D7E8
+
+D7DD:E3 98 02		ADDD  [2,X]
+D7E0:91 7C		CMPA  $7C
+D7E2:23 04		BLS   $D7E8
+
+D7E4:D1 7D		CMPB  $7D
+D7E6:22 06		BHI   $D7EE
+
+D7E8:AE 84		LDX   ,X
+D7EA:26 E5		BNE   $D7D1
+
+D7EC:39			RTS
+
+D7ED:76					; secret byte used for easter egg
+
+D7EE:DF 82		STU   $82
+D7F0:0D 48		TST   $48
+D7F2:26 06		BNE   $D7FA
+
+D7F4:10 AE 88 16	LDY   22,X
+D7F8:26 03		BNE   $D7FD
+
+D7FA:10 AE 02		LDY   2,X
+D7FD:A3 A4		SUBD  ,Y
+D7FF:10 9F 2D		STY   $2D
+D802:DD 2B		STD   $2B
+D804:4F			CLRA
+D805:5F			CLRB
+D806:DD 76		STD   $76
+D808:DD 78		STD   $78
+D80A:DC 2B		LDD   $2B
+D80C:D0 7D		SUBB  $7D
+D80E:22 05		BHI   $D815
+
+D810:50			NEGB
+D811:D7 77		STB   $77
+D813:20 02		BRA   $D817
+
+D815:D7 79		STB   $79
+D817:90 7C		SUBA  $7C
+D819:22 05		BHI   $D820
+
+D81B:40			NEGA
+D81C:97 76		STA   $76
+D81E:20 02		BRA   $D822
+
+D820:97 78		STA   $78
+D822:DC 2B		LDD   $2B
+D824:E3 A4		ADDD  ,Y
+D826:D0 7F		SUBB  $7F
+D828:22 01		BHI   $D82B
+
+D82A:5F			CLRB
+D82B:90 7E		SUBA  $7E
+D82D:22 01		BHI   $D830
+
+D82F:4F			CLRA
+D830:DD 80		STD   $80
+D832:EC A4		LDD   ,Y
+D834:93 76		SUBD  $76
+D836:93 80		SUBD  $80
+D838:DD 74		STD   $74
+D83A:A6 C4		LDA   ,U
+D83C:97 7B		STA   $7B
+D83E:D6 79		LDB   $79
+D840:3D			MUL
+D841:EE 42		LDU   2,U
+D843:33 CB		LEAU  D,U
+D845:A6 A4		LDA   ,Y
+D847:97 7A		STA   $7A
+D849:D6 77		LDB   $77
+D84B:3D			MUL
+D84C:10 AE 22		LDY   2,Y
+D84F:31 AB		LEAY  D,Y
+D851:96 76		LDA   $76
+D853:31 A6		LEAY  A,Y
+D855:96 78		LDA   $78
+D857:33 C6		LEAU  A,U
+D859:D6 74		LDB   $74
+D85B:5A			DECB
+D85C:A6 C5		LDA   B,U
+D85E:27 2C		BEQ   $D88C
+
+D860:A6 A5		LDA   B,Y
+D862:27 28		BEQ   $D88C
+
+D864:31 A5		LEAY  B,Y
+D866:1F 20		TFR   Y,D
+D868:DE 2D		LDU   $2D
+D86A:A3 42		SUBD  2,U
+D86C:10 AE 04		LDY   4,X
+D86F:E0 C4		SUBB  ,U
+D871:82 00		SBCA  #$00
+D873:25 08		BCS   $D87D
+
+D875:31 21		LEAY  1,Y
+D877:E0 C4		SUBB  ,U
+D879:82 00		SBCA  #$00
+D87B:24 F8		BCC   $D875
+
+D87D:EB C4		ADDB  ,U
+D87F:1F 98		TFR   B,A
+D881:5F			CLRB
+D882:33 AB		LEAU  D,Y
+D884:DF A6		STU   $A6
+D886:AD 98 08		JSR   [8,X]	; death routine?
+D889:86 01		LDA   #$01
+D88B:39			RTS
+
+D88C:5A			DECB
+D88D:2A CD		BPL   $D85C
+
+D88F:DC 7A		LDD   $7A
+D891:31 A6		LEAY  A,Y
+D893:33 C5		LEAU  B,U
+D895:0A 75		DEC   $75
+D897:26 C0		BNE   $D859
+
+D899:DE 82		LDU   $82
+D89B:7E D7 E8		JMP   $D7E8
+
+
+**********************************************************
+*
+* install color cycling threads
+*
+
+D89E:BD D0 54		JSR   $D054	; install thread
+D8A1:D9 DF				; color $0D spectrum cycling
+D8A3:BD D0 54		JSR   $D054	; install thread
+D8A6:D9 D2				; color $0F red/yellow cycling
+D8A8:BD D0 54		JSR   $D054	; install thread
+D8AB:DA 0D				; color $0A white and random cycling
+D8AD:BD D0 54		JSR   $D054	; install thread
+D8B0:D9 81				; color $0B green/red/blue cycling
+D8B2:BD D0 54		JSR   $D054	; install thread
+D8B5:D9 AE				; color $0E blue/purple/red cycling
+D8B7:BD D0 54		JSR   $D054	; install thread
+D8BA:D9 8E				; color $0C blue/green/red/black cycling
+D8BC:39			RTS
+
+
+* This is text!
+*
+* Characters are ASCII - $2E
+* $01 is a control code: the next word is the screen address for
+* the following characters.
+* $02 is also a control code: it means check for reset (see code).
+
+D8BD:01 0C 28
+D8C0:26 1A 1B 25 0C 1B 25 0C 24 21 14 21 26 24 21 20	; THIS IS ROBOTRON
+D8D0:11 0C 04 21 0A 06					; : 2084
+D8D6:02
+
+D8D7:01 0C 58
+D8DA:16 17 25 1B 19 20 17 16 0C 17 2A 15 1E 27 25 1B	; DESIGNED EXCLUSI
+D8EA:28 17 1E 2B 0C 18 21 24				; VELY FOR
+
+D8F2:01 0C 68
+D8F5:29 1B 1E 1E 1B 13 1F 25 0C 17 1E 17 15 26 24 21	; WILLIAMS ELECTRO
+D905:20 1B 15 25 0C 1B 20 15 0F				; NICS INC.
+D90E:02
+
+D90F:01 0C 78
+D912:14 2B 0C 17 27 19 17 20 17 0C 22 0F 0C 1C 13 24	; BY EUGENE P. JAR
+D922:28 1B 25 0C 13 20 16 0C 1E 13 29 24 17 20 15 17	; VIS AND LAWRENCE
+D932:0C 17 0F 0C 16 17 1F 13 24				;  E. DEMAR
+D93B:02
+
+D93C:01 0C A8
+D93F:15 21 22 2B 24 1B 19 1A 26 0C 03 0B 0A 04 0C 29	; COPYRIGHT 1982 W
+D94F:1B 1E 1E 1B 13 1F 25 0C 17 1E 17 15 26 24 21 20	; ILLIAMS ELECTRON
+D95F:1B 15 25 0C 1B 20 15 0F				; ICS INC.
+
+D967:01 0C B8
+D96A:13 1E 1E 0C 24 1B 19 1A 26 25 0C 24 17 25 17 24	; ALL RIGHTS RESER
+D97A:28 17 16						; VED
+
+D97D:00
+D97E:17 22 30
+
+
+* Assumption: color registers are set up as follows:
+* 7 6 5 4 3 2 1 0
+* B B G G G R R R
+
+
+**********************************************************
+*
+* Start up a thread which cycles color $0B
+* between green, red and blue.
+*
+
+D981:BD D9 E8		JSR   $D9E8
+D984:D9 8A		; cycle table address
+D986:98 0B		; color to cycle (address)
+D988:00			; initial index
+D989:08			; period
+
+* green/red/blue cycle table
+
+D98A:38 07 C0 00
+
+
+**********************************************************
+*
+* Start up a thread which cycles color $0C
+* from blue to green to red to black.
+*
+
+D98E:BD D9 E8		JSR   $D9E8
+D991:D9 97		; cycle table address
+D993:98 0C		; color to cycle (address)
+D995:00			; initial index
+D996:02			; period
+
+* blue to green to red to black cycle table
+
+D997:C0 C0 D0 E0 F0 F8 FA BA 7A 3A 34 2D 1F 17 0F 07
+D9A7:06 05 04 03 02 01 00
+
+
+**********************************************************
+*
+* Start up a thread which cycles color $0E
+* from blue to purple to red to purple to blue.
+*
+
+D9AE:BD D9 E8		JSR   $D9E8
+D9B1:D9 B7		; cycle table address
+D9B3:98 0E		; color to cycle (address)
+D9B5:00			; initial index
+D9B6:01			; period
+
+* blue to purple to red to purple to blue cycle table
+
+D9B7:C0 C1 C2 C3 C4 C5 C6 C7 87 87 47 47 07 07 47 47
+D9C7:87 87 C7 C7 C6 C5 C4 C3 C2 C1 00
+
+
+**********************************************************
+*
+* Start up a thread which cycles color $0F
+* between red and yellow.
+*
+
+D9D2:BD D9 E8		JSR   $D9E8
+D9D5:D9 DB		; cycle table address
+D9D7:98 0F		; color to cycle (address)
+D9D9:00			; initial index
+D9DA:06			; period
+
+* red/yellow cycle table
+
+D9DB:07 07 2F 00
+
+
+**********************************************************
+*
+* Start up a thread which cycles color $0D
+* through the spectrum.
+*
+
+D9DF:BD D9 E8		JSR   $D9E8
+D9E2:DA 2C		; cycle table address
+D9E4:98 0D		; color to cycle (address)
+D9E6:00			; initial index
+D9E7:02			; period
+
+
+**********************************************************
+*
+* Start up color cycling thread.
+*
+* On entry:
+*   Return address points to color cycle parm block:
+*      0 - address of cycle table
+*      2 - address of color to cycle
+*      4 - initial table index
+*      5 - period
+*
+* Thread format:
+*    7,U - address of cycle table
+*    9,U - current table index
+*   10,U - cycle period
+*   11,U - color (address) to cycle
+*
+
+D9E8:AE E1		LDX   ,S++	; get return address
+D9EA:EC 81		LDD   ,X++	; and get color cycling table
+D9EC:ED 47		STD   7,U
+D9EE:EC 81		LDD   ,X++	; and address of color to fiddle
+D9F0:ED 4B		STD   11,U
+D9F2:EC 81		LDD   ,X++	; and initial table index and period
+D9F4:ED 49		STD   9,U
+
+D9F6:6F 49		CLR   9,U
+
+* subsequent dispatches come to here
+
+D9F8:AE 47		LDX   7,U
+
+D9FA:E6 49		LDB   9,U	; get index
+D9FC:6C 49		INC   9,U	; and get next color
+D9FE:A6 85		LDA   B,X
+DA00:27 F4		BEQ   $D9F6	; end of table, start over
+
+DA02:A7 D8 0B		STA   [11,U]
+DA05:A6 4A		LDA   10,U 	; this addr referenced at DE11
+DA07:8E D9 F8		LDX   #$D9F8
+DA0A:7E D0 66		JMP   $D066
+
+
+**********************************************************
+*
+* Cycle color $A between white and a random color
+*
+* Color is white for 2 frames, random for 6 frames
+*
+
+DA0D:86 FF		LDA   #$FF	; make color $A white
+DA0F:97 0A		STA   $0A
+DA11:86 02		LDA   #$02	; period
+DA13:8E DA 19		LDX   #$DA19	; next thread dispatch goes here
+DA16:7E D0 66		JMP   $D066	; leave thread
+
+DA19:96 84		LDA   $84	; last random number
+DA1B:84 1F		ANDA  #$1F
+DA1D:8E DA 2C		LDX   #$DA2C	; use it as lookup into colors
+DA20:A6 86		LDA   A,X
+DA22:97 0A		STA   $0A	; store it as new color $A
+DA24:86 06		LDA   #$06	; period
+DA26:8E DA 0D		LDX   #$DA0D	; next dispatch goes here
+DA29:7E D0 66		JMP   $D066	; leave thread
+
+
+* spectrum cycle table
+
+DA2C:38 39 3A 3B 3C 3D 3E 3F 37 2F 27 1F 17 47 47 87
+DA3C:87 C7 C7 C6 C5 CC CB CA DA E8 F8 F9 FA FB FD FF
+DA4C:BF 3F 3E 3C 00
+
+* Initial color map
+
+DA51:00 07 17 C7 1F 3F 38 C0 A4 FF 38 17 CC 81 81 07
+
+
+**********************************************************
+*
+* Shape blitter
+*
+* On entry:
+*    D - destination on screen
+*    Y - shape
+*
+
+DA61:34 07		PSHS  B,A,CC
+DA63:1A 10		ORC   #$10	; turn off interrupts
+DA65:FD CA 04		STD   $CA04	; set destination on screen
+DA68:EC A4		LDD   ,Y	; get width and height from shape table
+DA6A:88 04		EORA  #$04	; transmogrify them
+DA6C:C8 04		EORB  #$04
+DA6E:FD CA 06		STD   $CA06	; set width and height
+DA71:EC 22		LDD   2,Y
+DA73:FD CA 02		STD   $CA02	; set shape raster
+DA76:D6 2D		LDB   $2D	; ?
+DA78:F7 CA 01		STB   $CA01
+DA7B:86 12		LDA   #$12
+DA7D:B7 CA 00		STA   $CA00	; invoke a blit
+DA80:35 87		PULS  PC,B,A,CC
+
+
+**********************************************************
+*
+* Shape blitter
+*
+* On entry:
+*    D - destination on screen
+*    Y - shape
+*
+
+DA82:34 07		PSHS  B,A,CC
+DA84:1A 10		ORC   #$10	; turn off interrupts
+DA86:FD CA 04		STD   $CA04	; set destination on screen
+DA89:EC A4		LDD   ,Y	; get width and height from shape table
+DA8B:88 04		EORA  #$04	; funkify them
+DA8D:C8 04		EORB  #$04
+DA8F:FD CA 06		STD   $CA06	; set width and height
+DA92:EC 22		LDD   2,Y	; shape raster
+DA94:FD CA 02		STD   $CA02	; set shape raster
+DA97:86 02		LDA   #$02
+DA99:B7 CA 00		STA   $CA00	; invoke a blit
+DA9C:35 87		PULS  PC,B,A,CC
+
+
+**********************************************************
+*
+* Shape blitter
+*
+* On entry:
+*    D - destination on screen
+*    Y - shape
+*
+
+DA9E:34 07		PSHS  B,A,CC
+DAA0:1A 10		ORC   #$10	; turn off interrupts
+DAA2:FD CA 04		STD   $CA04	; set destination on screen
+DAA5:EC A4		LDD   ,Y	; get width and height from shape table
+DAA7:88 04		EORA  #$04	; freakify them
+DAA9:C8 04		EORB  #$04
+DAAB:FD CA 06		STD   $CA06	; set width and height
+DAAE:EC 22		LDD   2,Y
+DAB0:FD CA 02		STD   $CA02	; set shape raster
+DAB3:D6 2D		LDB   $2D	; ?
+DAB5:F7 CA 01		STB   $CA01
+DAB8:86 1A		LDA   #$1A
+DABA:B7 CA 00		STA   $CA00	; invoke a blit
+DABD:35 87		PULS  PC,B,A,CC
+
+
+**********************************************************
+*
+* Shape blitter (erase?)
+*
+* On entry:
+*    D - destination on screen
+*    Y - shape
+*
+
+DABF:34 07		PSHS  B,A,CC
+DAC1:1A 10		ORC   #$10	; turn off interrupts
+DAC3:FD CA 04		STD   $CA04	; set destination on screen
+DAC6:EC A4		LDD   ,Y	; get width and height from shape table
+DAC8:88 04		EORA  #$04	; messify them
+DACA:C8 04		EORB  #$04
+DACC:FD CA 06		STD   $CA06	; set width and height
+DACF:EC 22		LDD   2,Y
+DAD1:FD CA 02		STD   $CA02	; set shape raster
+DAD4:CC 12 00		LDD   #$1200	; blitter modes
+DAD7:F7 CA 01		STB   $CA01
+DADA:B7 CA 00		STA   $CA00	; invoke a blit
+DADD:35 87		PULS  PC,B,A,CC
+
+
+**********************************************************
+*
+* Shape blitter
+*
+* On entry:
+*    X - destination on screen
+*    D - width, height
+*
+DADF:34 07		PSHS  B,A,CC
+DAE1:1A 10		ORC   #$10	; turn off interrupts
+DAE3:BF CA 04		STX   $CA04	; set destination on screen
+DAE6:88 04		EORA  #$04	; fiddle width and height
+DAE8:C8 04		EORB  #$04
+DAEA:FD CA 06		STD   $CA06	; set width and height
+DAED:CC 00 00		LDD   #$0000	; blitter modes
+DAF0:20 DF		BRA   $DAD1
+
+
+**********************************************************
+*
+* Shape blitter
+*
+
+DAF2:34 47		PSHS  U,B,A,CC
+DAF4:EE 02		LDU   2,X
+DAF6:EC C4		LDD   ,U
+DAF8:88 04		EORA  #$04
+DAFA:C8 04		EORB  #$04
+DAFC:1A 10		ORC   #$10	; turn off interrupts
+DAFE:FD CA 06		STD   $CA06
+DB01:20 58		BRA   $DB5B
+
+
+**********************************************************
+*
+* Erase shape
+*
+* On entry:
+*    X - address of shape
+*
+
+DB03:34 47		PSHS  U,B,A,CC
+DB05:EE 88 14		LDU   20,X	; get shape descriptor
+DB08:EC C4		LDD   ,U	; width and height
+DB0A:EE 42		LDU   2,U	; address of bitmap
+DB0C:88 04		EORA  #$04	; set up width and height
+DB0E:C8 04		EORB  #$04
+DB10:1A 10		ORC   #$10	; turn off interrupts while messing with blitter
+DB12:FD CA 06		STD   $CA06
+DB15:EC 04		LDD   4,X
+DB17:FD CA 04		STD   $CA04	; set up destination on screen
+DB1A:FF CA 02		STU   $CA02	; set up bitmap address
+DB1D:CC 1A 00		LDD   #$1A00
+DB20:F7 CA 01		STB   $CA01	; ($00) erase?
+DB23:E6 88 12		LDB   18,X
+DB26:2A 02		BPL   $DB2A	; store $1A or $3A
+
+DB28:8A 20		ORA   #$20
+DB2A:B7 CA 00		STA   $CA00
+DB2D:35 C7		PULS  PC,U,B,A,CC
+
+
+**********************************************************
+*
+* Shape blitter
+*
+* On entry:
+*    X -
+*    U -
+*
+
+DB2F:34 47		PSHS  U,B,A,CC
+DB31:EE 88 14		LDU   20,X
+DB34:EC C4		LDD   ,U
+DB36:EE 42		LDU   2,U
+DB38:88 04		EORA  #$04
+DB3A:C8 04		EORB  #$04
+DB3C:1A 10		ORC   #$10	; turn off interrupts
+DB3E:FD CA 06		STD   $CA06
+DB41:EC 04		LDD   4,X
+DB43:FD CA 04		STD   $CA04
+DB46:FF CA 02		STU   $CA02
+DB49:CC 1A 00		LDD   #$1A00
+DB4C:F7 CA 01		STB   $CA01
+DB4F:E6 88 12		LDB   18,X
+DB52:2A 02		BPL   $DB56
+
+DB54:8A 20		ORA   #$20
+DB56:B7 CA 00		STA   $CA00
+DB59:EE 02		LDU   2,X
+
+DB5B:EF 88 14		STU   20,X
+DB5E:EE 42		LDU   2,U
+DB60:FF CA 02		STU   $CA02
+DB63:A6 0A		LDA   10,X
+DB65:E6 0C		LDB   12,X
+DB67:ED 04		STD   4,X
+DB69:FD CA 04		STD   $CA04
+DB6C:86 0A		LDA   #$0A
+DB6E:E6 0B		LDB   11,X
+DB70:E7 88 12		STB   18,X
+DB73:2A 02		BPL   $DB77
+
+DB75:8A 20		ORA   #$20
+DB77:B7 CA 00		STA   $CA00
+DB7A:35 C7		PULS  PC,U,B,A,CC
+
+
+************************************************************
+*
+* Clear screen
+*
+
+* Zero screen RAM by setting up the user stack pointer to the top of
+* the range, zeroing the registers, then pushing the registers onto the
+* user stack repeatedly until the user stack pointer is zero.
+
+DB7C:34 76		PSHS  U,Y,X,B,A
+DB7E:CE 98 00		LDU   #$9800
+DB81:8E 00 00		LDX   #$0000
+DB84:1F 12		TFR   X,Y
+DB86:1F 10		TFR   X,D
+
+DB88:36 36		PSHU  Y,X,B,A		; clear 32 bytes
+DB8A:36 36		PSHU  Y,X,B,A
+DB8C:36 36		PSHU  Y,X,B,A
+DB8E:36 36		PSHU  Y,X,B,A
+DB90:36 36		PSHU  Y,X,B,A
+DB92:36 10		PSHU  X
+DB94:11 83 00 00	CMPU  #$0000
+DB98:26 EE		BNE   $DB88
+
+DB9A:35 F6		PULS  PC,U,Y,X,B,A
+
+
+**********************************************************
+*
+* Add to player score?
+*
+* On entry:
+*    D - score to add, in BCD (eg, $0025, $0115, $0210)
+*
+
+DB9C:34 76		PSHS  U,Y,X,B,A
+DB9E:0C F0		INC   $F0
+DBA0:44			LSRA
+DBA1:34 02		PSHS  A
+DBA3:86 00		LDA   #$00
+DBA5:24 08		BCC   $DBAF
+
+DBA7:58			LSLB
+DBA8:49			ROLA
+DBA9:58			LSLB
+DBAA:49			ROLA
+DBAB:58			LSLB
+DBAC:49			ROLA
+DBAD:58			LSLB
+DBAE:49			ROLA
+DBAF:BD D0 45		JSR   $D045	; get address of player data into X
+DBB2:DD 2B		STD   $2B
+DBB4:C6 03		LDB   #$03
+DBB6:E0 E0		SUBB  ,S+
+DBB8:A6 85		LDA   B,X
+DBBA:9B 2C		ADDA  $2C
+DBBC:19			DAA
+DBBD:A7 85		STA   B,X
+DBBF:5A			DECB
+DBC0:2B 0E		BMI   $DBD0
+
+DBC2:A6 85		LDA   B,X
+DBC4:99 2B		ADCA  $2B
+DBC6:19			DAA
+DBC7:A7 85		STA   B,X
+DBC9:86 00		LDA   #$00
+DBCB:97 2B		STA   $2B
+DBCD:5A			DECB
+DBCE:2A F2		BPL   $DBC2
+
+DBD0:DC 46		LDD   $46
+DBD2:27 38		BEQ   $DC0C
+
+DBD4:31 04		LEAY  4,X
+DBD6:EC 84		LDD   ,X
+DBD8:10 A3 A4		CMPD  ,Y
+DBDB:26 05		BNE   $DBE2
+
+DBDD:EC 02		LDD   2,X
+DBDF:10 A3 22		CMPD  2,Y
+DBE2:25 28		BCS   $DC0C
+
+DBE4:A6 22		LDA   2,Y
+DBE6:9B 47		ADDA  $47
+DBE8:19			DAA
+DBE9:A7 22		STA   2,Y
+DBEB:A6 21		LDA   1,Y
+DBED:99 46		ADCA  $46
+DBEF:19			DAA
+DBF0:A7 21		STA   1,Y
+DBF2:A6 A4		LDA   ,Y
+DBF4:89 00		ADCA  #$00
+DBF6:19			DAA
+DBF7:A7 A4		STA   ,Y
+DBF9:CC D0 C9		LDD   #$D0C9
+DBFC:BD D0 4B		JSR   $D04B	; play a song - extra man?
+DBFF:BD D0 45		JSR   $D045	; get address of player data
+DC02:6C 08		INC   8,X	; increment number of men
+DC04:BD 26 C9		JSR   $26C9
+DC07:C6 05		LDB   #$05
+DC09:BD D0 BD		JSR   $D0BD	; update something in CMOS RAM
+DC0C:8D 03		BSR   $DC11	; update score on screen?
+DC0E:35 76		PULS  U,Y,X,B,A
+DC10:39			RTS
+
+
+**********************************************************
+*
+*
+DC11:96 3F		LDA   $3F
+
+DC13:C6 11		LDB   #$11
+DC15:91 3F		CMPA  $3F
+DC17:26 02		BNE   $DC1B
+
+DC19:C6 AA		LDB   #$AA
+DC1B:34 02		PSHS  A
+DC1D:D7 CF		STB   $CF
+DC1F:4A			DECA
+DC20:26 08		BNE   $DC2A
+
+DC22:8E 18 0E		LDX   #$180E
+DC25:CE BD E4		LDU   #$BDE4
+DC28:20 06		BRA   $DC30
+
+DC2A:8E 58 0E		LDX   #$580E
+DC2D:CE BE 20		LDU   #$BE20
+DC30:CC 15 06		LDD   #$1506
+DC33:BD D0 1B		JSR   $D01B
+DC36:30 89 FD 00	LEAX  -768,X
+DC3A:0F D6		CLR   $D6
+DC3C:A6 C4		LDA   ,U
+DC3E:84 0F		ANDA  #$0F
+DC40:BD 5F 9F		JSR   $5F9F
+DC43:A6 41		LDA   1,U
+DC45:BD 5F 9F		JSR   $5F9F
+DC48:A6 42		LDA   2,U
+DC4A:BD 5F 9F		JSR   $5F9F
+DC4D:0C D6		INC   $D6
+DC4F:A6 43		LDA   3,U
+DC51:BD 5F 9F		JSR   $5F9F
+DC54:35 82		PULS  PC,A
+
+**********************************************************
+*
+*		IRQ HANDLER
+*
+
+DC56:B6 C8 0E		LDA   $C80E
+DC59:86 01		LDA   #$01	; ROM read
+DC5B:9A 45		ORA   $45
+DC5D:B7 C9 00		STA   $C900
+DC60:B6 CB 00		LDA   $CB00	; vertical beam address
+DC63:81 80		CMPA  #$80
+DC65:25 32		BCS   $DC99
+
+DC67:96 43		LDA   $43
+DC69:26 20		BNE   $DC8B
+
+DC6B:0C 43		INC   $43
+DC6D:0C 10		INC   $10
+DC6F:BD D3 E0		JSR   $D3E0	; reads buttons and stuff
+DC72:BD 26 C0		JSR   $26C0	; player movement
+DC75:B6 CB 00		LDA   $CB00	; vertical beam address
+DC78:7F CA 01		CLR   $CA01	; zero blitter data byte
+* test for screen inversion
+DC7B:D6 45		LDB   $45
+DC7D:C5 02		BITB  #$02
+DC7F:27 0C		BEQ   $DC8D	; 0 == normal screen
+
+DC81:8B 10		ADDA  #$10	; add $10 to vbeam addr
+DC83:97 41		STA   $41
+DC85:BD DC FF		JSR   $DCFF
+DC88:BD DD 4E		JSR   $DD4E
+DC8B:20 54		BRA   $DCE1
+
+DC8D:80 10		SUBA  #$10
+DC8F:97 41		STA   $41
+DC91:BD DD 90		JSR   $DD90
+DC94:BD DD 3E		JSR   $DD3E
+DC97:20 48		BRA   $DCE1
+
+DC99:D6 43		LDB   $43
+DC9B:27 44		BEQ   $DCE1
+
+DC9D:0F 43		CLR   $43
+DC9F:0C 10		INC   $10
+DCA1:C6 39		LDB   #$39	; feed the watchdog
+DCA3:F7 CB FF		STB   $CBFF
+DCA6:81 04		CMPA  #$04
+DCA8:22 1B		BHI   $DCC5
+
+DCAA:CE C0 10		LDU   #$C010	; top addr of cmap
+DCAD:DC 0A		LDD   $0A	; store new cmap by pushing
+DCAF:9E 0C		LDX   $0C	; things on U stack
+DCB1:10 9E 0E		LDY   $0E
+DCB4:36 36		PSHU  Y,X,B,A
+DCB6:DC 04		LDD   $04
+DCB8:9E 06		LDX   $06
+DCBA:10 9E 08		LDY   $08
+DCBD:36 36		PSHU  Y,X,B,A
+DCBF:DC 00		LDD   $00
+DCC1:9E 02		LDX   $02
+DCC3:36 16		PSHU  X,B,A
+DCC5:0C 44		INC   $44
+DCC7:BD D4 4D		JSR   $D44D
+DCCA:7F CA 01		CLR   $CA01
+DCCD:D6 45		LDB   $45
+DCCF:C5 02		BITB  #$02
+DCD1:27 08		BEQ   $DCDB
+
+DCD3:BD DC E7		JSR   $DCE7
+DCD6:BD DD 3E		JSR   $DD3E
+DCD9:20 06		BRA   $DCE1
+
+DCDB:BD DD 60		JSR   $DD60
+DCDE:BD DD 4E		JSR   $DD4E
+DCE1:96 45		LDA   $45	; restore ROM or RAM read
+DCE3:B7 C9 00		STA   $C900
+DCE6:3B			RTI
+
+DCE7:96 59		LDA   $59
+DCE9:85 08		BITA  #$08
+DCEB:26 11		BNE   $DCFE
+
+DCED:9E 17		LDX   $17
+DCEF:27 0D		BEQ   $DCFE
+
+DCF1:EC 04		LDD   4,X
+DCF3:D1 41		CMPB  $41
+DCF5:22 03		BHI   $DCFA
+
+DCF7:BD DD CE		JSR   $DDCE
+DCFA:AE 84		LDX   ,X
+DCFC:26 F3		BNE   $DCF1
+
+DCFE:39			RTS
+
+DCFF:96 59		LDA   $59
+DD01:85 08		BITA  #$08
+DD03:26 72		BNE   $DD77
+
+DD05:9E 17		LDX   $17
+DD07:27 34		BEQ   $DD3D
+
+DD09:EC 0A		LDD   10,X
+DD0B:EE 02		LDU   2,X
+DD0D:E3 0E		ADDD  14,X
+DD0F:81 07		CMPA  #$07
+DD11:25 0A		BCS   $DD1D
+
+DD13:AB C4		ADDA  ,U
+DD15:81 90		CMPA  #$90
+DD17:22 04		BHI   $DD1D
+
+DD19:A0 C4		SUBA  ,U
+DD1B:ED 0A		STD   10,X
+DD1D:EC 0C		LDD   12,X
+DD1F:E3 88 10		ADDD  16,X
+DD22:81 18		CMPA  #$18
+DD24:25 0A		BCS   $DD30
+
+DD26:AB 41		ADDA  1,U
+DD28:81 EB		CMPA  #$EB
+DD2A:22 04		BHI   $DD30
+
+DD2C:A0 41		SUBA  1,U
+DD2E:ED 0C		STD   12,X
+DD30:EC 04		LDD   4,X
+DD32:D1 41		CMPB  $41
+DD34:23 03		BLS   $DD39
+
+DD36:BD DD CE		JSR   $DDCE
+DD39:AE 84		LDX   ,X
+DD3B:26 CC		BNE   $DD09
+
+DD3D:39			RTS
+
+DD3E:96 59		LDA   $59
+DD40:85 10		BITA  #$10
+DD42:26 09		BNE   $DD4D
+
+DD44:8E 98 5A		LDX   #$985A
+DD47:DC 5E		LDD   $5E
+DD49:D1 41		CMPB  $41
+DD4B:23 11		BLS   $DD5E
+
+DD4D:39			RTS
+
+DD4E:96 59		LDA   $59
+DD50:85 10		BITA  #$10
+DD52:26 F9		BNE   $DD4D
+
+DD54:8E 98 5A		LDX   #$985A
+DD57:DC 5E		LDD   $5E
+DD59:D1 41		CMPB  $41
+DD5B:22 71		BHI   $DDCE
+
+DD5D:39			RTS
+
+DD5E:20 6E		BRA   $DDCE
+
+DD60:96 59		LDA   $59
+DD62:85 08		BITA  #$08
+DD64:26 10		BNE   $DD76
+
+DD66:9E 17		LDX   $17
+DD68:27 0C		BEQ   $DD76
+
+DD6A:EC 04		LDD   4,X
+DD6C:D1 41		CMPB  $41
+DD6E:23 02		BLS   $DD72
+
+DD70:8D 5C		BSR   $DDCE
+DD72:AE 84		LDX   ,X
+DD74:26 F4		BNE   $DD6A
+
+DD76:39			RTS
+
+DD77:96 59		LDA   $59
+DD79:85 02		BITA  #$02
+DD7B:26 12		BNE   $DD8F
+
+DD7D:96 44		LDA   $44
+DD7F:84 07		ANDA  #$07
+DD81:26 0C		BNE   $DD8F
+
+DD83:9E 17		LDX   $17
+DD85:27 08		BEQ   $DD8F
+
+DD87:EC 04		LDD   4,X
+DD89:8D 43		BSR   $DDCE
+DD8B:AE 84		LDX   ,X
+DD8D:26 F8		BNE   $DD87
+
+DD8F:39			RTS
+
+DD90:96 59		LDA   $59
+DD92:85 08		BITA  #$08
+DD94:26 E1		BNE   $DD77
+
+DD96:9E 17		LDX   $17
+DD98:27 33		BEQ   $DDCD
+
+DD9A:EC 0A		LDD   10,X
+DD9C:EE 02		LDU   2,X
+DD9E:E3 0E		ADDD  14,X
+DDA0:81 07		CMPA  #$07
+DDA2:25 0A		BCS   $DDAE
+
+DDA4:AB C4		ADDA  ,U
+DDA6:81 90		CMPA  #$90
+DDA8:22 04		BHI   $DDAE
+
+DDAA:A0 C4		SUBA  ,U
+DDAC:ED 0A		STD   10,X
+DDAE:EC 0C		LDD   12,X
+DDB0:E3 88 10		ADDD  16,X
+DDB3:81 18		CMPA  #$18
+DDB5:25 0A		BCS   $DDC1
+
+DDB7:AB 41		ADDA  1,U
+DDB9:81 EB		CMPA  #$EB
+DDBB:22 04		BHI   $DDC1
+
+DDBD:A0 41		SUBA  1,U
+DDBF:ED 0C		STD   12,X
+DDC1:EC 04		LDD   4,X
+DDC3:D1 41		CMPB  $41
+DDC5:22 02		BHI   $DDC9
+
+DDC7:8D 05		BSR   $DDCE
+DDC9:AE 84		LDX   ,X
+DDCB:26 CD		BNE   $DD9A
+
+DDCD:39			RTS
+
+DDCE:FD CA 04		STD   $CA04
+DDD1:EE 88 14		LDU   20,X
+DDD4:37 26		PULU  Y,B,A
+DDD6:88 04		EORA  #$04
+DDD8:C8 04		EORB  #$04
+DDDA:FD CA 06		STD   $CA06
+DDDD:10 BF CA 02	STY   $CA02
+DDE1:86 1A		LDA   #$1A
+DDE3:E6 88 12		LDB   18,X
+DDE6:2A 02		BPL   $DDEA
+
+DDE8:8A 20		ORA   #$20
+DDEA:B7 CA 00		STA   $CA00
+DDED:A6 0A		LDA   10,X
+DDEF:E6 0C		LDB   12,X
+DDF1:ED 04		STD   4,X
+DDF3:FD CA 04		STD   $CA04
+DDF6:EE 02		LDU   2,X
+DDF8:EF 88 14		STU   20,X
+DDFB:EC 42		LDD   2,U
+DDFD:FD CA 02		STD   $CA02
+DE00:86 0A		LDA   #$0A
+DE02:E6 0B		LDB   11,X
+DE04:E7 88 12		STB   18,X
+DE07:2A 02		BPL   $DE0B
+
+DE09:8A 20		ORA   #$20
+DE0B:B7 CA 00		STA   $CA00
+DE0E:39			RTS
+
+**********************************************************
+*
+*
+DE0F:34 56		PSHS  U,X,B,A
+DE11:8E DA 05		LDX   #$DA05	; execute next thread?
+DE14:34 06		PSHS  B,A
+DE16:C6 FE		LDB   #$FE	; assert RAM read
+DE18:D4 45		ANDB  $45
+DE1A:D7 45		STB   $45
+DE1C:F7 C9 00		STB   $C900
+DE1F:5F			CLRB
+DE20:6A 61		DEC   1,S
+DE22:A6 61		LDA   1,S
+DE24:EA C6		ORB   A,U
+DE26:4A			DECA
+DE27:2A FB		BPL   $DE24
+
+DE29:86 37		LDA   #$37
+DE2B:33 C9 01 00	LEAU  256,U
+DE2F:6A E4		DEC   ,S
+DE31:26 EF		BNE   $DE22
+
+DE33:A1 89 BE EE	CMPA  -16658,X
+DE37:27 12		BEQ   $DE4B
+
+DE39:96 86		LDA   $86
+DE3B:81 01		CMPA  #$01
+DE3D:22 0C		BHI   $DE4B
+
+DE3F:34 04		PSHS  B
+DE41:D6 85		LDB   $85
+DE43:86 98		LDA   #$98
+DE45:1F 01		TFR   D,X
+DE47:6A 84		DEC   ,X
+DE49:35 04		PULS  B
+DE4B:86 01		LDA   #$01	; rom read for video RAM shadow
+DE4D:9A 45		ORA   $45
+DE4F:97 45		STA   $45
+DE51:B7 C9 00		STA   $C900
+DE54:5D			TSTB
+DE55:32 62		LEAS  2,S
+DE57:35 D6		PULS  PC,U,X,B,A
+
+
+**********************************************************
+*
+*
+DE59:34 36		PSHS  Y,X,B,A
+DE5B:34 16		PSHS  X,B,A
+* assert RAM read for video RAM shadow
+DE5D:D6 45		LDB   $45
+DE5F:C4 FE		ANDB  #$FE
+DE61:D7 45		STB   $45
+DE63:F7 C9 00		STB   $C900
+
+DE66:E6 84		LDB   ,X
+DE68:E7 A0		STB   ,Y+
+DE6A:30 89 01 00	LEAX  256,X
+DE6E:4A			DECA
+DE6F:26 F5		BNE   $DE66
+
+DE71:AE 62		LDX   2,S
+DE73:30 01		LEAX  1,X
+DE75:AF 62		STX   2,S
+DE77:A6 E4		LDA   ,S
+DE79:6A 61		DEC   1,S
+DE7B:26 E9		BNE   $DE66
+
+DE7D:32 64		LEAS  4,S
+* restore rom read for video RAM
+DE7F:96 45		LDA   $45
+DE81:8A 01		ORA   #$01
+DE83:97 45		STA   $45
+DE85:B7 C9 00		STA   $C900
+DE88:35 B6		PULS  PC,Y,X,B,A
+
+DE8A:20 52 4F 42 4F 54 52 4F 4E 3A 20 32 30 38 34 20  ' ROBOTRON: 2084 '
+DE9A:28 54 4D 29 20 20 43 4F 50 59 52 49 47 48 54 20  '(TM)  COPYRIGHT '
+DEAA:31 39 38 32 20 57 49 4C 4C 49 41 4D 53 20 45 4C  '1982 WILLIAMS EL'
+DEBA:45 43 54 52 4F 4E 49 43 53 20 49 4E 43 2E 20 20  'ECTRONICS INC.  '
+DECA:20 41 4C 4C 20 52 49 47 48 54 53 20 52 45 53 45  ' ALL RIGHTS RESE'
+DEDA:52 56 45 44 0B 0B 0B 0B 0B 0B 0B 0B FF FF FF FF  'RVED............'
+DEEA:FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  '................'
+DEFA:FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  '................'
+DF0A:FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  '................'
+DF1A:FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  '................'
+DF2A:FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  '................'
+DF3A:FF FF FF FF FF FF					 '......'
+DF40:35 06		PULS  B,A
+DF42:DE 15		LDU   $15
+DF44:ED C8 19		STD   25,U
+DF47:BD D0 54		JSR   $D054	; install thread
+DF4A:E2 6F				; thread's entry address
+DF4C:BD E1 E3		JSR   $E1E3
+DF4F:86 99		LDA   #$99
+DF51:97 D8		STA   $D8
+DF53:86 CC		LDA   #$CC
+DF55:97 D9		STA   $D9
+DF57:10 8E CF 6E	LDY   #$CF6E
+DF5B:DE 15		LDU   $15
+DF5D:86 07		LDA   #$07
+DF5F:A7 47		STA   7,U
+DF61:CC 05 02		LDD   #$0502
+DF64:ED 48		STD   8,U
+DF66:CC 09 34		LDD   #$0934
+DF69:ED 4A		STD   10,U
+DF6B:86 01		LDA   #$01
+DF6D:A7 4D		STA   13,U
+DF6F:8E 1A 35		LDX   #$1A35
+DF72:BD E0 5C		JSR   $E05C
+DF75:86 AA		LDA   #$AA
+DF77:97 D8		STA   $D8
+DF79:86 DD		LDA   #$DD
+DF7B:97 D9		STA   $D9
+DF7D:10 8E CD 5A	LDY   #$CD5A
+DF81:BD E0 E9		JSR   $E0E9
+DF84:8E CD 5E		LDX   #$CD5E
+DF87:BD D0 A2		JSR   $D0A2
+DF8A:30 1C		LEAX  -4,X
+DF8C:81 3A		CMPA  #$3A
+DF8E:26 05		BNE   $DF95
+
+DF90:8C CD 38		CMPX  #$CD38
+DF93:24 F2		BCC   $DF87
+
+DF95:30 02		LEAX  2,X
+DF97:34 10		PSHS  X
+DF99:8E 15 7A		LDX   #$157A
+DF9C:86 31		LDA   #$31
+DF9E:BD 5F 93		JSR   $5F93
+DFA1:86 5C		LDA   #$5C
+DFA3:BD 5F 93		JSR   $5F93
+DFA6:30 89 03 00	LEAX  768,X
+DFAA:10 8E CD 38	LDY   #$CD38
+DFAE:1E 12		EXG   X,Y
+DFB0:BD D0 A2		JSR   $D0A2
+DFB3:1E 12		EXG   X,Y
+DFB5:BD 5F 93		JSR   $5F93
+DFB8:10 AC E4		CMPY  ,S
+DFBB:23 F1		BLS   $DFAE
+
+DFBD:30 89 02 00	LEAX  512,X
+DFC1:10 8E CD 60	LDY   #$CD60
+DFC5:BD E1 37		JSR   $E137
+DFC8:9F 2B		STX   $2B
+DFCA:8E CC 16		LDX   #$CC16
+DFCD:BD D0 A2		JSR   $D0A2
+DFD0:81 03		CMPA  #$03
+DFD2:27 23		BEQ   $DFF7
+
+DFD4:9E 2B		LDX   $2B
+DFD6:30 89 05 00	LEAX  1280,X
+DFDA:86 5B		LDA   #$5B
+DFDC:BD 5F 93		JSR   $5F93
+DFDF:10 8E CD 32	LDY   #$CD32
+DFE3:C6 03		LDB   #$03
+DFE5:1E 12		EXG   X,Y
+DFE7:BD D0 A2		JSR   $D0A2
+DFEA:1E 12		EXG   X,Y
+DFEC:BD 5F 93		JSR   $5F93
+DFEF:5A			DECB
+DFF0:26 F3		BNE   $DFE5
+
+DFF2:86 5C		LDA   #$5C
+DFF4:BD 5F 93		JSR   $5F93
+DFF7:DE 15		LDU   $15
+DFF9:86 05		LDA   #$05
+DFFB:A7 47		STA   7,U
+DFFD:CC 0C 03		LDD   #$0C03
+E000:ED 48		STD   8,U
+E002:CC 07 28		LDD   #$0728
+E005:ED 4A		STD   10,U
+E007:86 02		LDA   #$02
+E009:A7 4D		STA   13,U
+E00B:8E 14 88		LDX   #$1488
+E00E:10 8E CD 68	LDY   #$CD68
+E012:8D 48		BSR   $E05C
+E014:86 6E		LDA   #$6E
+E016:BD 5F 99		JSR   $5F99
+E019:BD D0 54		JSR   $D054	; install thread
+E01C:E2 E0				; thread's entry address
+E01E:BD D0 54		JSR   $D054	; install thread
+E021:E2 9A				; thread's entry address
+E023:BD D0 54		JSR   $D054	; install thread
+E026:E2 E9				; thread's entry address
+E028:BD D0 54		JSR   $D054	; install thread
+E02B:E2 F5				; thread's entry address
+
+* conjecture: the following thread is used during the demo to decide if
+* it's time to continue or not.  The first section is a busy-wait loop
+* executed C8 times every 3rd time.  The second section executes up to
+* FF times every 4th time, short circuiting if a control is pressed
+* (one of move up, left, down, or right, or start 1 or 2, or fire up,
+* left, down, or right.  The ORA $C804 indicates that we don't care
+* _which_ switch is closed, just that *any* is closed.
+
+E02D:DE 15		LDU   $15	; our data structure
+E02F:86 C8		LDA   #$C8	; counter
+E031:A7 47		STA   7,U	;
+E033:86 03		LDA   #$03	; call every 3rd time
+E035:8E E0 3B		LDX   #$E03B	; where to restart
+E038:7E D0 66		JMP   $D066	; execute some threads
+
+E03B:6A 47		DEC   7,U	; counter at 0?
+E03D:26 F4		BNE   $E033	; no, resubmit
+
+E03F:86 FF		LDA   #$FF	; reset counter
+E041:A7 47		STA   7,U	;
+E043:86 04		LDA   #$04	; skip me 4 times
+E045:8E E0 4B		LDX   #$E04B	; where to come back to
+E048:7E D0 66		JMP   $D066	; execute some more threads
+
+E04B:B6 C8 06		LDA   $C806	; read IO
+E04E:84 03		ANDA  #$03	; isolate fire left & right
+E050:BA C8 04		ORA   $C804	; see if any other button is active
+E053:27 04		BEQ   $E059	; no?
+
+E055:6A 47		DEC   7,U	; dec counter
+E057:26 EA		BNE   $E043	; resubmit
+
+E059:6E D8 19		JMP   [25,U]	; where to go?
+
+E05C:35 06		PULS  B,A
+E05E:DE 15		LDU   $15
+E060:ED C8 12		STD   18,U
+E063:AF C8 16		STX   22,U
+E066:AF 4E		STX   14,U
+E068:10 AF C8 10	STY   16,U
+E06C:A6 48		LDA   8,U
+E06E:A7 4C		STA   12,U
+E070:86 04		LDA   #$04
+E072:A7 C8 18		STA   24,U
+E075:AE 4E		LDX   14,U
+E077:10 AE C8 10	LDY   16,U
+E07B:8D 6C		BSR   $E0E9
+E07D:E6 4D		LDB   13,U
+E07F:86 6F		LDA   #$6F
+E081:BD E1 6E		JSR   $E16E
+E084:34 10		PSHS  X
+E086:C6 03		LDB   #$03
+E088:1E 12		EXG   X,Y
+E08A:BD D0 A2		JSR   $D0A2
+E08D:1E 12		EXG   X,Y
+E08F:BD E1 84		JSR   $E184
+E092:5A			DECB
+E093:26 F3		BNE   $E088
+
+E095:35 10		PULS  X
+E097:A6 47		LDA   7,U
+E099:C6 03		LDB   #$03
+E09B:3D			MUL
+E09C:54			LSRB
+E09D:5C			INCB
+E09E:1F 98		TFR   B,A
+E0A0:E6 47		LDB   7,U
+E0A2:C1 05		CMPB  #$05
+E0A4:26 01		BNE   $E0A7
+
+E0A6:4C			INCA
+E0A7:5F			CLRB
+E0A8:30 8B		LEAX  D,X
+E0AA:BD E1 37		JSR   $E137
+E0AD:A6 4D		LDA   13,U
+E0AF:8B 01		ADDA  #$01
+E0B1:19			DAA
+E0B2:A7 4D		STA   13,U
+E0B4:1F 10		TFR   X,D
+E0B6:A6 C8 16		LDA   22,U
+E0B9:EB 4A		ADDB  10,U
+E0BB:1F 01		TFR   D,X
+E0BD:6A 4C		DEC   12,U
+E0BF:27 13		BEQ   $E0D4
+
+E0C1:6A C8 18		DEC   24,U
+E0C4:26 B5		BNE   $E07B
+
+E0C6:AF 4E		STX   14,U
+E0C8:10 AF C8 10	STY   16,U
+E0CC:86 01		LDA   #$01
+E0CE:8E E0 70		LDX   #$E070
+E0D1:7E D0 66		JMP   $D066
+
+E0D4:EC C8 16		LDD   22,U
+E0D7:AB 4B		ADDA  11,U
+E0D9:A7 C8 16		STA   22,U
+E0DC:1F 01		TFR   D,X
+E0DE:A6 48		LDA   8,U
+E0E0:A7 4C		STA   12,U
+E0E2:6A 49		DEC   9,U
+E0E4:26 DB		BNE   $E0C1
+
+E0E6:6E D8 12		JMP   [18,U]
+
+E0E9:34 36		PSHS  Y,X,B,A
+E0EB:31 26		LEAY  6,Y
+E0ED:8E BD E4		LDX   #$BDE4
+E0F0:8D 1C		BSR   $E10E
+E0F2:27 0C		BEQ   $E100
+
+E0F4:D6 40		LDB   $40
+E0F6:5A			DECB
+E0F7:27 0F		BEQ   $E108
+
+E0F9:8E BE 20		LDX   #$BE20
+E0FC:8D 10		BSR   $E10E
+E0FE:26 08		BNE   $E108
+
+E100:8D 23		BSR   $E125
+E102:27 04		BEQ   $E108
+
+E104:96 D9		LDA   $D9
+E106:20 02		BRA   $E10A
+
+E108:96 D8		LDA   $D8
+E10A:97 CF		STA   $CF
+E10C:35 B6		PULS  PC,Y,X,B,A
+
+E10E:34 20		PSHS  Y
+E110:1E 12		EXG   X,Y
+E112:BD D0 A2		JSR   $D0A2
+E115:84 0F		ANDA  #$0F
+E117:C6 04		LDB   #$04
+E119:A1 A0		CMPA  ,Y+
+E11B:26 06		BNE   $E123
+
+E11D:BD D0 A2		JSR   $D0A2
+E120:5A			DECB
+E121:26 F6		BNE   $E119
+
+E123:35 A0		PULS  PC,Y
+
+E125:31 21		LEAY  1,Y
+E127:30 2E		LEAX  14,Y
+E129:C6 07		LDB   #$07
+E12B:A6 80		LDA   ,X+
+E12D:A8 A0		EORA  ,Y+
+E12F:84 0F		ANDA  #$0F
+E131:26 03		BNE   $E136
+
+E133:5A			DECB
+E134:26 F5		BNE   $E12B
+
+E136:39			RTS
+
+E137:1E 12		EXG   X,Y
+E139:BD D0 A2		JSR   $D0A2
+E13C:BD D0 A5		JSR   $D0A5
+E13F:1E 12		EXG   X,Y
+E141:84 0F		ANDA  #$0F
+E143:26 07		BNE   $E14C
+
+E145:5D			TSTB
+E146:26 04		BNE   $E14C
+
+E148:86 63		LDA   #$63
+E14A:20 0D		BRA   $E159
+
+E14C:34 20		PSHS  Y
+E14E:1F 02		TFR   D,Y
+E150:86 62		LDA   #$62
+E152:BD E1 6E		JSR   $E16E
+E155:35 20		PULS  Y
+E157:86 2A		LDA   #$2A
+E159:34 02		PSHS  A
+E15B:1E 12		EXG   X,Y
+E15D:BD D0 A8		JSR   $D0A8
+E160:1E 12		EXG   X,Y
+E162:34 20		PSHS  Y
+E164:1F 02		TFR   D,Y
+E166:A6 62		LDA   2,S
+E168:8D 04		BSR   $E16E
+E16A:35 20		PULS  Y
+E16C:35 82		PULS  PC,A
+
+E16E:34 52		PSHS  U,X,A
+E170:8E 5F 99		LDX   #$5F99
+E173:A6 47		LDA   7,U
+E175:81 07		CMPA  #$07
+E177:27 03		BEQ   $E17C
+
+E179:8E 5F 96		LDX   #$5F96
+E17C:1F 13		TFR   X,US
+E17E:35 12		PULS  X,A
+E180:AD C4		JSR   ,U
+E182:35 C0		PULS  PC,U
+
+E184:34 52		PSHS  U,X,A
+E186:8E 5F 93		LDX   #$5F93
+E189:A6 47		LDA   7,U
+E18B:81 07		CMPA  #$07
+E18D:27 ED		BEQ   $E17C
+
+E18F:8E 5F 90		LDX   #$5F90
+E192:20 E8		BRA   $E17C
+
+E194:20 52 4F 42 4F 54 52 4F 4E 3A 20 32 30 38 34 20  ' ROBOTRON: 2084 '
+E1A4:20 43 4F 50 59 52 49 47 48 54 20 31 39 38 32 20  ' COPYRIGHT 1982 '
+E1B4:57 49 4C 4C 49 41 4D 53 20 45 4C 45 43 54 52 4F  'WILLIAMS ELECTRO'
+E1C4:4E 49 43 53 20 49 4E 43 2E 20 20 41 4C 4C 20 52  'NICS INC.  ALL R'
+E1D4:49 47 48 54 53 20 52 45 53 45 52 56 45 44 20     'IGHTS RESERVED '
+E1E3:35 06		PULS  B,A
+E1E5:DE 15		LDU   $15
+E1E7:ED 4F		STD   15,U
+* clear cmap shadow
+E1E9:8E 98 00		LDX   #$9800
+E1EC:CC 00 00		LDD   #$0000
+E1EF:ED 81		STD   ,X++
+E1F1:8C 98 10		CMPX  #$9810
+E1F4:25 F9		BCS   $E1EF
+
+E1F6:8E 06 0D		LDX   #$060D
+E1F9:AF C8 17		STX   23,U
+E1FC:86 11		LDA   #$11
+E1FE:A7 C8 15		STA   21,U
+E201:8E 3E 7D		LDX   #$3E7D
+E204:AF C8 11		STX   17,U
+E207:10 8E 59 7F	LDY   #$597F
+E20B:10 AF C8 13	STY   19,U
+E20F:86 02		LDA   #$02
+E211:A7 C8 16		STA   22,U
+E214:AE C8 11		LDX   17,U
+E217:10 AE C8 13	LDY   19,U
+E21B:A6 C8 15		LDA   21,U
+E21E:BD E3 13		JSR   $E313
+E221:AC C8 17		CMPX  23,U
+E224:27 32		BEQ   $E258
+
+E226:30 89 FE FE	LEAX  -258,X
+E22A:31 A9 01 02	LEAY  258,Y
+E22E:8D 17		BSR   $E247
+E230:6A C8 16		DEC   22,U
+E233:26 E9		BNE   $E21E
+
+E235:A7 C8 15		STA   21,U
+E238:AF C8 11		STX   17,U
+E23B:10 AF C8 13	STY   19,U
+E23F:86 01		LDA   #$01
+E241:8E E2 0F		LDX   #$E20F
+E244:7E D0 66		JMP   $D066
+
+E247:34 04		PSHS  B
+E249:E6 C8 17		LDB   23,U
+E24C:C1 06		CMPB  #$06
+E24E:26 06		BNE   $E256
+
+E250:80 11		SUBA  #$11
+E252:26 02		BNE   $E256
+
+E254:86 88		LDA   #$88
+E256:35 84		PULS  PC,B
+
+E258:AE C8 17		LDX   23,U
+E25B:8C 06 0D		CMPX  #$060D
+E25E:27 03		BEQ   $E263
+
+E260:6E D8 0F		JMP   [15,U]
+
+E263:8E 0E 1D		LDX   #$0E1D
+E266:AF C8 17		STX   23,U
+E269:6F C8 15		CLR   21,U
+E26C:7E E2 01		JMP   $E201
+
+E26F:8E E2 FE		LDX   #$E2FE	; (initial) grab table of cmap values
+E272:A6 80		LDA   ,X+	; get nth entry
+E274:8D 13		BSR   $E289	; cylce a range of cmap vals
+E276:AF 47		STX   7,U	; save state
+E278:86 03		LDA   #$03	; queue for restart
+E27A:8E E2 80		LDX   #$E280	; restart address
+E27D:7E D0 66		JMP   $D066	; execute next thread
+
+E280:AE 47		LDX   7,U	; get last color
+E282:8C E3 13		CMPX  #$E313	; end of table?
+E285:25 EB		BCS   $E272	; nope.
+
+E287:20 E6		BRA   $E26F	; yup, restart
+
+* cycle all the color registers (final value from table) except the first
+E289:10 8E 98 01	LDY   #$9801
+E28D:E6 21		LDB   1,Y
+E28F:E7 A0		STB   ,Y+
+E291:10 8C 98 08	CMPY  #$9808
+E295:25 F6		BCS   $E28D
+
+E297:A7 A4		STA   ,Y
+E299:39			RTS
+
+* set up a colormap cycle from E2C2 that is null terminated
+* Object state off U:
+* 11,U -> initial address of color register table
+* 9,U  -> destination address of color
+* 7,U  -> pointer to current value in color reg table
+E29A:10 8E 98 0A	LDY   #$980A
+E29E:8E E2 C2		LDX   #$E2C2
+E2A1:CC E2 C2		LDD   #$E2C2
+E2A4:ED 4B		STD   11,U
+E2A6:10 AF 49		STY   9,U
+E2A9:20 02		BRA   $E2AD
+
+E2AB:AE 4B		LDX   11,U
+E2AD:AF 47		STX   7,U
+E2AF:AE 47		LDX   7,U
+E2B1:A6 80		LDA   ,X+
+E2B3:27 F6		BEQ   $E2AB
+
+E2B5:A7 D8 09		STA   [9,U]
+E2B8:AF 47		STX   7,U
+E2BA:86 04		LDA   #$04
+E2BC:8E E2 AF		LDX   #$E2AF
+E2BF:7E D0 66		JMP   $D066
+
+E2C2:07 07 07 07 07 07 07 07 57 A7 FF FF A7 57 00 FF
+E2D2:FF FF FF FF FF FF E4 D2 C0 C0 C0 D2 E4 00
+E2E0:8E E2 C9		LDX   #$E2C9
+E2E3:10 8E 98 09	LDY   #$9809	; some pulse - we have this as white!!
+E2E7:20 B8		BRA   $E2A1
+
+E2E9:8E E2 D8		LDX   #$E2D8
+E2EC:10 8E 98 0C	LDY   #$980C	; grunt pulse color
+E2F0:CC E2 D1		LDD   #$E2D1
+E2F3:20 AF		BRA   $E2A4
+
+E2F5:8E E2 D1		LDX   #$E2D1
+E2F8:10 8E 98 0D	LDY   #$980D	; enforcer base pulse color
+E2FC:20 F2		BRA   $E2F0
+
+E2FE:37 2F 27 1F 17 47 47 87 87 C7 C7 C6 C5 CC CB CA  '7/'..GG.........'
+E30E:C0 D0 98 38 33 34 36					 '...8346'
+E315:DE 15		LDU   $15
+E317:84 F0		ANDA  #$F0
+E319:A7 4B		STA   11,U
+E31B:A6 E4		LDA   ,S
+E31D:84 0F		ANDA  #$0F
+E31F:A7 4C		STA   12,U
+E321:1F 10		TFR   X,D
+E323:A7 49		STA   9,U
+E325:E7 47		STB   7,U
+E327:1F 20		TFR   Y,D
+E329:A7 4A		STA   10,U
+E32B:E7 48		STB   8,U
+E32D:E0 47		SUBB  7,U
+E32F:56			RORB
+E330:24 02		BCC   $E334
+
+E332:6A 48		DEC   8,U
+E334:A6 47		LDA   7,U
+E336:8D 3B		BSR   $E373
+E338:4C			INCA
+E339:8D 4A		BSR   $E385
+E33B:A6 48		LDA   8,U
+E33D:8D 34		BSR   $E373
+E33F:4A			DECA
+E340:8D 43		BSR   $E385
+E342:A6 49		LDA   9,U
+E344:8D 0B		BSR   $E351
+E346:8D 17		BSR   $E35F
+E348:A6 4A		LDA   10,U
+E34A:8D 05		BSR   $E351
+E34C:4A			DECA
+E34D:8D 10		BSR   $E35F
+E34F:35 B6		PULS  PC,Y,X,B,A
+
+E351:34 16		PSHS  X,B,A
+E353:8D 14		BSR   $E369
+E355:5C			INCB
+E356:A6 4B		LDA   11,U
+E358:A7 81		STA   ,X++
+E35A:5A			DECB
+E35B:26 FB		BNE   $E358
+
+E35D:35 96		PULS  PC,X,B,A
+
+E35F:34 16		PSHS  X,B,A
+E361:8D 06		BSR   $E369
+E363:30 01		LEAX  1,X
+E365:A6 4C		LDA   12,U
+E367:20 EF		BRA   $E358
+
+E369:E6 47		LDB   7,U
+E36B:1F 01		TFR   D,X
+E36D:E6 48		LDB   8,U
+E36F:E0 47		SUBB  7,U
+E371:54			LSRB
+E372:39			RTS
+
+E373:34 16		PSHS  X,B,A
+E375:8D 16		BSR   $E38D
+E377:5C			INCB
+E378:A6 4B		LDA   11,U
+E37A:A7 84		STA   ,X
+E37C:30 89 01 00	LEAX  256,X
+E380:5A			DECB
+E381:26 F7		BNE   $E37A
+
+E383:35 96		PULS  PC,X,B,A
+
+E385:34 16		PSHS  X,B,A
+E387:8D 04		BSR   $E38D
+E389:A6 4C		LDA   12,U
+E38B:20 ED		BRA   $E37A
+
+E38D:1F 89		TFR   A,B
+E38F:A6 49		LDA   9,U
+E391:1F 01		TFR   D,X
+E393:E6 4A		LDB   10,U
+E395:E0 49		SUBB  9,U
+E397:39			RTS
+
+E398:FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  '................'
+E3A8:FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  '................'
+E3B8:FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  '................'
+E3C8:FF FF FF FF FF FF FF FF				 '........'
+
+E3D0:7E E5 F5		JMP   $E5F5
+E3D3:7E E6 F7		JMP   $E6F7	; some kind of restart
+E3D6:7E E8 A5		JMP   $E8A5
+E3D9:7E E4 33		JMP   $E433
+E3DC:7E E4 13		JMP   $E413
+E3DF:7E E3 E2		JMP   $E3E2
+
+E3E2:86 18		LDA   #$18
+E3E4:A7 47		STA   7,U
+E3E6:86 3F		LDA   #$3F	; silence
+E3E8:B7 C8 0E		STA   $C80E
+E3EB:86 08		LDA   #$08
+E3ED:8E E3 F3		LDX   #$E3F3
+E3F0:7E D0 66		JMP   $D066
+
+E3F3:B6 C8 0C		LDA   $C80C
+E3F6:85 08		BITA  #$08	; High score reset?
+E3F8:27 16		BEQ   $E410
+
+E3FA:6A 47		DEC   7,U
+E3FC:26 ED		BNE   $E3EB
+
+E3FE:10 8E CD 32	LDY   #$CD32
+E402:8E E4 6C		LDX   #$E46C
+E405:C6 17		LDB   #$17
+E407:BD 6F 0C		JSR   $6F0C
+E40A:BD E5 BC		JSR   $E5BC
+E40D:7F C8 0E		CLR   $C80E	; stop sound or make sound 0
+E410:7E D0 63		JMP   $D063	; remove thread
+
+E413:10 8E CD 68	LDY   #$CD68
+E417:C6 08		LDB   #$08
+E419:BD E5 E3		JSR   $E5E3
+E41C:A8 26		EORA  6,Y
+E41E:84 0F		ANDA  #$0F
+E420:27 03		BEQ   $E425
+
+E422:5A			DECB
+E423:27 0E		BEQ   $E433
+
+E425:86 39		LDA   #$39	; feed the watchdog
+E427:B7 CB FF		STA   $CBFF
+E42A:31 2E		LEAY  14,Y
+E42C:10 8C CF 6E	CMPY  #$CF6E
+E430:25 E7		BCS   $E419
+
+E432:39			RTS
+
+E433:86 39		LDA   #$39	; feed the watchdog
+E435:B7 CB FF		STA   $CBFF
+E438:8E E4 6C		LDX   #$E46C	; addr of init high scores
+E43B:10 8E CD 32	LDY   #$CD32	; dest addr
+E43F:C6 92		LDB   #$92	; lenth
+E441:BD 6F 0C		JSR   $6F0C	; write routine?
+E444:8E E4 FE		LDX   #$E4FE	; continue after last $92 bytes?
+E447:10 8E CE 56	LDY   #$CE56
+E44B:C6 8C		LDB   #$8C
+E44D:BD 6F 0C		JSR   $6F0C
+E450:BD E5 BC		JSR   $E5BC
+E453:10 8E CD 68	LDY   #$CD68
+E457:BD E5 DB		JSR   $E5DB
+E45A:86 39		LDA   #$39	; feed the watchdog
+E45C:B7 CB FF		STA   $CBFF
+E45F:31 2E		LEAY  14,Y
+E461:10 8C CF 6E	CMPY  #$CF6E
+E465:25 F0		BCS   $E457
+
+E467:86 5D		LDA   #$5D
+E469:7E 5F 99		JMP   $5F99
+
+E46C:42 49 4C 57 49 4C 4C 59 3A 45 4C 4B 54 52 49 58  'BILWILLY:ELKTRIX'
+E47C:3A 3A 3A 3A 3A 3A 3A 00 13 16 82 56 49 44 00 12  ':::::::....VID..'
+E48C:21 45 4B 49 44 00 12 21 35 44 52 4A 00 05 21 27  '!EKID..!5DRJ..!''
+E49C:4C 45 44 00 05 02 18 45 50 4A 00 04 12 55 4A 45  'LED....EPJ...UJE'
+E4AC:52 00 04 12 50 4B 49 44 00 03 19 20 4D 4C 47 00  'R...PKID... MLG.'
+E4BC:03 19 19 53 53 52 00 02 66 45 55 4E 41 00 02 66  '...SSR..fEUNA..f'
+E4CC:35 4A 52 53 00 02 52 50 43 4A 4D 00 02 41 10 4B  '5JRS..RPCJM..A.K'
+E4DC:4A 46 00 02 30 20 4D 52 53 00 02 20 35 50 47 44  'JF..0 MRS.. 5PGD'
+E4EC:00 02 10 90 4E 4A 4D 00 02 09 65 4E 48 44 00 02  '....NJM...eNHD..'
+E4FC:09 60 44 4F 4E 00 01 82 80 56 49 56 00 01 82 80  '.`DON....VIV....'
+E50C:47 57 57 00 01 81 05 43 52 42 00 01 80 55 4D 44  'GWW....CRB...UMD'
+E51C:52 00 01 75 65 42 41 43 00 01 72 56 57 3A 52 00  'R..ueBAC..rVW:R.'
+E52C:01 70 70 4D 50 54 00 01 60 60 53 55 45 00 01 55  '.ppMPT..``SUE..U'
+E53C:20 4D 4F 4D 00 01 44 80 44 41 44 00 01 44 79 53  ' MOM..D.DAD..DyS'
+E54C:46 44 00 01 44 78 41 4B 44 00 01 44 77 43 57 4B  'FD..DxAKD..DwCWK'
+E55C:00 01 33 30 54 4D 48 00 01 32 70 45 4A 53 00 01  '..30TMH..2pEJS..'
+E56C:31 20 52 41 59 00 01 30 65 47 41 59 00 01 29 65  '1 RAY..0eGAY..)e'
+E57C:52 4B 4D 00 01 28 55 43 4E 53 00 01 27 55 3A 3A  'RKM..(UCNS..'U::'
+E58C:3A 00 01 00 00 C0 01 01 1B 01 01 02 00 C0 01 FF  ':...............'
+E59C:3C 01 FF 00 01 20 00 01 C0 36 01 60 3D 02 0A 11  '<.... ...6.`=...'
+E5AC:02 40 3E 00						    '.@>.'
+E5B0:34 34		PSHS  Y,X,B
+E5B2:8E E5 8A		LDX   #$E58A
+E5B5:C6 07		LDB   #$07
+E5B7:BD 6F 0C		JSR   $6F0C
+E5BA:35 B4		PULS  PC,Y,X,B
+
+E5BC:34 02		PSHS  A
+E5BE:8D 05		BSR   $E5C5
+E5C0:B7 CD 60		STA   $CD60
+E5C3:35 82		PULS  PC,A
+
+E5C5:34 10		PSHS  X
+E5C7:8E CD 32		LDX   #$CD32
+E5CA:4F			CLRA
+E5CB:AB 84		ADDA  ,X
+E5CD:30 01		LEAX  1,X
+E5CF:8C CD 60		CMPX  #$CD60
+E5D2:27 F9		BEQ   $E5CD
+
+E5D4:8C CD 68		CMPX  #$CD68
+E5D7:26 F2		BNE   $E5CB
+
+E5D9:35 90		PULS  PC,X
+
+E5DB:34 02		PSHS  A
+E5DD:8D 04		BSR   $E5E3
+E5DF:A7 26		STA   6,Y
+E5E1:35 82		PULS  PC,A
+
+E5E3:34 24		PSHS  Y,B
+E5E5:C6 0E		LDB   #$0E
+E5E7:4F			CLRA
+E5E8:C1 08		CMPB  #$08
+E5EA:27 02		BEQ   $E5EE
+
+E5EC:AB A4		ADDA  ,Y
+E5EE:31 21		LEAY  1,Y
+E5F0:5A			DECB
+E5F1:26 F5		BNE   $E5E8
+
+E5F3:35 A4		PULS  PC,Y,B
+
+E5F5:86 32		LDA   #$32
+E5F7:34 02		PSHS  A
+E5F9:10 8E CD 68	LDY   #$CD68
+E5FD:8D E4		BSR   $E5E3
+E5FF:A8 26		EORA  6,Y
+E601:84 0F		ANDA  #$0F
+E603:27 0F		BEQ   $E614
+
+E605:BD E6 CC		JSR   $E6CC
+E608:7F CD 00		CLR   $CD00
+E60B:7F CD 01		CLR   $CD01
+E60E:6A E4		DEC   ,S
+E610:27 12		BEQ   $E624
+
+E612:20 E9		BRA   $E5FD
+
+E614:86 03		LDA   #$03
+E616:C6 04		LDB   #$04
+E618:8D 68		BSR   $E682
+E61A:25 E9		BCS   $E605
+
+E61C:31 2E		LEAY  14,Y
+E61E:10 8C CF 6E	CMPY  #$CF6E
+E622:25 D9		BCS   $E5FD
+
+E624:35 02		PULS  A
+E626:8E E4 95		LDX   #$E495
+E629:10 8E CF 6E	LDY   #$CF6E
+E62D:C6 46		LDB   #$46
+E62F:BD 6F 0C		JSR   $6F0C
+E632:8D 91		BSR   $E5C5
+E634:B8 CD 60		EORA  $CD60
+E637:84 0F		ANDA  #$0F
+E639:27 02		BEQ   $E63D
+
+E63B:8D 0F		BSR   $E64C
+E63D:10 8E CD 32	LDY   #$CD32
+E641:86 17		LDA   #$17
+E643:C6 04		LDB   #$04
+E645:8D 3B		BSR   $E682
+E647:24 02		BCC   $E64B
+
+E649:8D 01		BSR   $E64C
+E64B:39			RTS
+
+E64C:8E CD 38		LDX   #$CD38
+E64F:86 3A		LDA   #$3A
+E651:BD D0 AB		JSR   $D0AB
+E654:8C CD 60		CMPX  #$CD60
+E657:25 F8		BCS   $E651
+
+E659:8E CD 68		LDX   #$CD68
+E65C:10 8E CD 38	LDY   #$CD38
+E660:86 06		LDA   #$06
+E662:BD E6 EC		JSR   $E6EC
+E665:10 8E CD 32	LDY   #$CD32
+E669:BD E6 EC		JSR   $E6EC
+E66C:8E CD 6E		LDX   #$CD6E
+E66F:10 8E CD 60	LDY   #$CD60
+E673:86 08		LDA   #$08
+E675:BD E6 EC		JSR   $E6EC
+E678:BD E5 BC		JSR   $E5BC
+E67B:10 8E CD 68	LDY   #$CD68
+E67F:7E E6 CC		JMP   $E6CC
+
+E682:34 16		PSHS  X,B,A
+E684:C6 39		LDB   #$39
+E686:F7 CB FF		STB   $CBFF
+E689:1F 21		TFR   Y,X
+E68B:BD D0 A5		JSR   $D0A5
+E68E:C1 41		CMPB  #$41
+E690:24 04		BCC   $E696
+
+E692:C1 3A		CMPB  #$3A
+E694:26 32		BNE   $E6C8
+
+E696:C1 5A		CMPB  #$5A
+E698:22 2E		BHI   $E6C8
+
+E69A:4A			DECA
+E69B:26 EE		BNE   $E68B
+
+E69D:A6 61		LDA   1,S
+E69F:BD D0 A5		JSR   $D0A5
+E6A2:C4 0F		ANDB  #$0F
+E6A4:C1 09		CMPB  #$09
+E6A6:22 20		BHI   $E6C8
+
+E6A8:4A			DECA
+E6A9:BD D0 A5		JSR   $D0A5
+E6AC:34 04		PSHS  B
+E6AE:C4 0F		ANDB  #$0F
+E6B0:C1 09		CMPB  #$09
+E6B2:35 04		PULS  B
+E6B4:22 12		BHI   $E6C8
+
+E6B6:C4 F0		ANDB  #$F0
+E6B8:C1 99		CMPB  #$99
+E6BA:22 0C		BHI   $E6C8
+
+E6BC:4A			DECA
+E6BD:26 EA		BNE   $E6A9
+
+E6BF:1C FE		ANDC  #$FE
+E6C1:86 39		LDA   #$39
+E6C3:B7 CB FF		STA   $CBFF
+E6C6:35 96		PULS  PC,X,B,A
+
+E6C8:1A 01		ORC   #$01
+E6CA:20 F5		BRA   $E6C1
+
+
+E6CC:34 36		PSHS  Y,X,B,A
+E6CE:30 2E		LEAX  14,Y
+E6D0:8C CF 6E		CMPX  #$CF6E
+E6D3:24 0F		BCC   $E6E4
+
+E6D5:86 0E		LDA   #$0E
+E6D7:8D 13		BSR   $E6EC
+E6D9:31 2E		LEAY  14,Y
+E6DB:30 0E		LEAX  14,X
+E6DD:86 39		LDA   #$39
+E6DF:B7 CB FF		STA   $CBFF
+E6E2:20 EC		BRA   $E6D0
+
+E6E4:BD E5 B0		JSR   $E5B0
+E6E7:BD E5 DB		JSR   $E5DB
+E6EA:35 B6		PULS  PC,Y,X,B,A
+
+
+**********************************************************
+*
+* Copy RAM from X to Y for count of A
+*
+
+E6EC:34 36		PSHS  Y,X,B,A
+E6EE:E6 80		LDB   ,X+
+E6F0:E7 A0		STB   ,Y+
+E6F2:4A			DECA
+E6F3:26 F9		BNE   $E6EE
+
+E6F5:35 B6		PULS  PC,Y,X,B,A
+
+
+**********************************************************
+*
+*
+
+E6F7:BD D0 60		JSR   $D060	; clear out deadwood threads
+E6FA:BD D0 12		JSR   $D012	; clear screen
+E6FD:BD D0 33		JSR   $D033	; install initial colormap
+E700:BD D0 99		JSR   $D099	; standup config
+E703:8E BD E4		LDX   #$BDE4
+E706:C6 01		LDB   #$01
+E708:8D 20		BSR   $E72A
+E70A:D6 40		LDB   $40
+E70C:5A			DECB
+E70D:27 18		BEQ   $E727
+
+E70F:BD D0 12		JSR   $D012	; clear screen
+E712:B6 C8 06		LDA   $C806	; cocktail game?
+E715:2A 03		BPL   $E71A	; no
+
+E717:BD D0 9C		JSR   $D09C	; yes, flip screen and MUX controls
+E71A:8E BE 20		LDX   #$BE20
+E71D:C6 02		LDB   #$02
+E71F:8D 09		BSR   $E72A
+E721:BD D0 12		JSR   $D012	; clear screen
+E724:BD D0 99		JSR   $D099	; standup config
+E727:7E 77 A0		JMP   $77A0	; go to splash screen
+
+E72A:35 20		PULS  Y
+E72C:10 BF B3 E4	STY   $B3E4
+E730:BF B3 E8		STX   $B3E8
+E733:D7 3F		STB   $3F
+E735:BD E9 0E		JSR   $E90E
+E738:24 5B		BCC   $E795
+
+E73A:BD E8 B5		JSR   $E8B5
+E73D:10 8E CD 68	LDY   #$CD68
+E741:8E CF 60		LDX   #$CF60
+E744:BD E8 8F		JSR   $E88F
+E747:8E CD 60		LDX   #$CD60
+E74A:10 8E CD 6E	LDY   #$CD6E
+E74E:86 08		LDA   #$08
+E750:BD E6 EC		JSR   $E6EC
+E753:8E CD 32		LDX   #$CD32
+E756:10 8E CD 68	LDY   #$CD68
+E75A:86 06		LDA   #$06
+E75C:BD E6 EC		JSR   $E6EC
+E75F:10 8E CD 68	LDY   #$CD68
+E763:BD E5 DB		JSR   $E5DB
+E766:BE B3 E8		LDX   $B3E8
+E769:10 8E CD 60	LDY   #$CD60
+E76D:C6 04		LDB   #$04
+E76F:BD 6F 0C		JSR   $6F0C
+E772:BD E5 BC		JSR   $E5BC
+E775:8E E5 8A		LDX   #$E58A
+E778:10 8E CD 32	LDY   #$CD32
+E77C:C6 03		LDB   #$03
+E77E:BD 6F 0C		JSR   $6F0C
+E781:BD D0 12		JSR   $D012	; clear screen
+E784:86 60		LDA   #$60
+E786:B7 B3 E6		STA   $B3E6
+E789:8E CC 16		LDX   #$CC16
+E78C:BD D0 A5		JSR   $D0A5
+E78F:C1 03		CMPB  #$03
+E791:27 42		BEQ   $E7D5
+
+E793:20 22		BRA   $E7B7
+
+E795:BD E9 1B		JSR   $E91B
+E798:25 09		BCS   $E7A3
+
+E79A:BD E9 38		JSR   $E938
+E79D:25 04		BCS   $E7A3
+
+E79F:6E 9F B3 E4	JMP   [$B3E4]
+
+E7A3:7F B3 E6		CLR   $B3E6
+E7A6:CC E5 91		LDD   #$E591
+E7A9:10 8C CF 6E	CMPY  #$CF6E
+E7AD:26 03		BNE   $E7B2
+
+E7AF:CC E5 99		LDD   #$E599
+E7B2:BD E9 71		JSR   $E971
+E7B5:86 5F		LDA   #$5F
+E7B7:D6 3F		LDB   $3F
+E7B9:BD D0 12		JSR   $D012	; clear screen
+E7BC:BD 5F 99		JSR   $5F99
+E7BF:CC 3A 3A		LDD   #$3A3A
+E7C2:FD B3 EA		STD   $B3EA
+E7C5:B7 B3 EC		STA   $B3EC
+E7C8:CC 03 00		LDD   #$0300
+E7CB:8E 46 80		LDX   #$4680
+E7CE:10 8E B3 EA	LDY   #$B3EA
+E7D2:BD 6F 09		JSR   $6F09
+E7D5:BD E9 1B		JSR   $E91B
+E7D8:24 06		BCC   $E7E0
+
+E7DA:8E CF EC		LDX   #$CFEC
+E7DD:BD E8 75		JSR   $E875
+E7E0:BD E9 38		JSR   $E938
+E7E3:24 43		BCC   $E828
+
+E7E5:7D B3 E6		TST   $B3E6
+E7E8:27 1C		BEQ   $E806
+
+E7EA:8E B3 EA		LDX   #$B3EA
+E7ED:10 8E CD 32	LDY   #$CD32
+E7F1:C6 03		LDB   #$03
+E7F3:BD 6F 0C		JSR   $6F0C
+E7F6:BD E5 BC		JSR   $E5BC
+E7F9:86 05		LDA   #$05
+E7FB:8D 2F		BSR   $E82C
+E7FD:24 29		BCC   $E828
+
+E7FF:1F 12		TFR   X,Y
+E801:BD E6 CC		JSR   $E6CC
+E804:20 12		BRA   $E818
+
+E806:BD E8 30		JSR   $E830
+E809:34 01		PSHS  CC
+E80B:34 10		PSHS  X
+E80D:10 AC E1		CMPY  ,S++
+E810:22 02		BHI   $E814
+
+E812:8D 61		BSR   $E875
+E814:35 01		PULS  CC
+E816:24 10		BCC   $E828
+
+E818:BD D0 12		JSR   $D012	; clear screen
+E81B:86 64		LDA   #$64
+E81D:BD 5F 99		JSR   $5F99
+E820:86 60		LDA   #$60
+E822:8E E8 28		LDX   #$E828
+E825:7E D0 66		JMP   $D066
+
+E828:6E 9F B3 E4	JMP   [$B3E4]
+E82C:34 26		PSHS  Y,B,A
+E82E:20 0C		BRA   $E83C
+
+E830:34 26		PSHS  Y,B,A
+E832:8E CD 32		LDX   #$CD32
+E835:8D 24		BSR   $E85B
+E837:86 04		LDA   #$04
+E839:25 01		BCS   $E83C
+
+E83B:4C			INCA
+E83C:97 2B		STA   $2B
+E83E:8E CD 68		LDX   #$CD68
+E841:8D 18		BSR   $E85B
+E843:24 04		BCC   $E849
+
+E845:0A 2B		DEC   $2B
+E847:27 0E		BEQ   $E857
+
+E849:30 0E		LEAX  14,X
+E84B:8C CF 6E		CMPX  #$CF6E
+E84E:25 F1		BCS   $E841
+
+E850:8E CF 60		LDX   #$CF60
+E853:1C FE		ANDC  #$FE
+E855:35 A6		PULS  PC,Y,B,A
+
+E857:1A 01		ORC   #$01
+E859:35 A6		PULS  PC,Y,B,A
+
+E85B:34 10		PSHS  X
+E85D:10 8E B3 EA	LDY   #$B3EA
+E861:C6 03		LDB   #$03
+E863:BD D0 A2		JSR   $D0A2
+E866:A1 A0		CMPA  ,Y+
+E868:26 07		BNE   $E871
+
+E86A:5A			DECB
+E86B:26 F6		BNE   $E863
+
+E86D:1A 01		ORC   #$01
+E86F:35 90		PULS  PC,X
+
+E871:1C FE		ANDC  #$FE
+E873:35 90		PULS  PC,X
+
+E875:34 20		PSHS  Y
+E877:BD E8 8F		JSR   $E88F
+E87A:8E B3 EA		LDX   #$B3EA
+E87D:C6 03		LDB   #$03
+E87F:BD 6F 0C		JSR   $6F0C
+E882:BE B3 E8		LDX   $B3E8
+E885:C6 04		LDB   #$04
+E887:BD 6F 0C		JSR   $6F0C
+E88A:35 20		PULS  Y
+E88C:7E E5 DB		JMP   $E5DB
+
+E88F:34 30		PSHS  Y,X
+E891:1F 12		TFR   X,Y
+E893:10 AC 62		CMPY  2,S
+E896:27 0B		BEQ   $E8A3
+
+E898:30 32		LEAX  -14,Y
+E89A:86 0E		LDA   #$0E
+E89C:BD E6 EC		JSR   $E6EC
+E89F:31 32		LEAY  -14,Y
+E8A1:20 F0		BRA   $E893
+
+E8A3:35 B0		PULS  PC,Y,X
+
+E8A5:35 06		PULS  B,A
+E8A7:FD B3 E4		STD   $B3E4
+E8AA:C6 01		LDB   #$01
+E8AC:8D 07		BSR   $E8B5
+E8AE:BD E5 BC		JSR   $E5BC
+E8B1:6E 9F B3 E4	JMP   [$B3E4]
+
+E8B5:35 20		PULS  Y
+E8B7:10 BF B3 E6	STY   $B3E6
+E8BB:4F			CLRA
+E8BC:1F 02		TFR   D,Y
+E8BE:CC E5 99		LDD   #$E599
+E8C1:BD E9 71		JSR   $E971
+E8C4:8E CC 16		LDX   #$CC16
+E8C7:BD D0 A5		JSR   $D0A5
+E8CA:BD D0 12		JSR   $D012	; clear screen
+E8CD:C1 03		CMPB  #$03
+E8CF:26 0E		BNE   $E8DF
+
+E8D1:D6 3F		LDB   $3F
+E8D3:86 5F		LDA   #$5F
+E8D5:BD 5F 99		JSR   $5F99
+E8D8:86 03		LDA   #$03
+E8DA:8E 46 80		LDX   #$4680
+E8DD:20 0D		BRA   $E8EC
+
+E8DF:86 5E		LDA   #$5E
+E8E1:BD 5F 99		JSR   $5F99
+E8E4:1F 98		TFR   B,A
+E8E6:BD D0 C6		JSR   $D0C6
+E8E9:8E 2D 80		LDX   #$2D80
+E8EC:10 8E B3 FE	LDY   #$B3FE
+E8F0:C6 3A		LDB   #$3A
+E8F2:E7 A2		STB   ,-Y
+E8F4:10 8C B3 EA	CMPY  #$B3EA
+E8F8:22 F8		BHI   $E8F2
+
+E8FA:5F			CLRB
+E8FB:BD 6F 09		JSR   $6F09
+E8FE:8E B3 EA		LDX   #$B3EA
+E901:10 8E CD 38	LDY   #$CD38
+E905:C6 14		LDB   #$14
+E907:BD 6F 0C		JSR   $6F0C
+E90A:6E 9F B3 E6	JMP   [$B3E6]
+
+E90E:34 30		PSHS  Y,X
+E910:10 8E CD 60	LDY   #$CD60
+E914:BE B3 E8		LDX   $B3E8
+E917:8D 38		BSR   $E951
+E919:35 B0		PULS  PC,Y,X
+
+E91B:34 10		PSHS  X
+E91D:10 8E CF 74	LDY   #$CF74
+E921:BE B3 E8		LDX   $B3E8
+E924:8D 2B		BSR   $E951
+E926:25 0C		BCS   $E934
+
+E928:31 2E		LEAY  14,Y
+E92A:10 8C CF FA	CMPY  #$CFFA
+E92E:25 F4		BCS   $E924
+
+E930:1C FE		ANDC  #$FE
+E932:35 90		PULS  PC,X
+
+E934:31 3A		LEAY  -6,Y
+E936:35 90		PULS  PC,X
+
+E938:34 10		PSHS  X
+E93A:10 8E CD 60	LDY   #$CD60
+E93E:BE B3 E8		LDX   $B3E8
+E941:8D 0E		BSR   $E951
+E943:25 EF		BCS   $E934
+
+E945:31 2E		LEAY  14,Y
+E947:10 8C CF 60	CMPY  #$CF60
+E94B:25 F4		BCS   $E941
+
+E94D:1C FE		ANDC  #$FE
+E94F:35 90		PULS  PC,X
+
+E951:34 36		PSHS  Y,X,B,A
+E953:1E 12		EXG   X,Y
+E955:C6 04		LDB   #$04
+E957:BD D0 A2		JSR   $D0A2
+E95A:C1 04		CMPB  #$04
+E95C:26 02		BNE   $E960
+
+E95E:84 0F		ANDA  #$0F
+E960:A1 A0		CMPA  ,Y+
+E962:22 05		BHI   $E969
+
+E964:25 07		BCS   $E96D
+
+E966:5A			DECB
+E967:26 EE		BNE   $E957
+
+E969:1C FE		ANDC  #$FE
+E96B:35 B6		PULS  PC,Y,X,B,A
+
+E96D:1A 01		ORC   #$01
+E96F:35 B6		PULS  PC,Y,X,B,A
+
+E971:0F 56		CLR   $56
+E973:7E D0 4B		JMP   $D04B	; play a song
+
+E976:FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  '................'
+E986:FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  '................'
+E996:FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  '................'
+E9A6:FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  '................'
+E9B6:FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF  '................'
+E9C6:FF FF       '..'
+
+
+* Character sets
+*
+* Indexed by ASCII - $30
+* $3A is a space
+* $3F is a colon
+
+E9C8:E9 CC	; Address of 5 pixel high character set
+E9CA:EC 34	; Address of 7 pixel high character set
+
+* 5 pixel high character pointers
+
+E9CC:EA 2A EA 35 EA 40 EA 4B EA 56 EA 61 EA 6C EA 77
+E9DC:EA 82 EA 8D EA 98 EA 9E EA A4 EA AF EA B5 EA C5
+E9EC:EA CB EA D6 EA E1 EA EC EA F7 EB 02 EB 0D EB 18
+E9FC:EB 23 EB 2E EB 39 EB 44 EB 4F EB 5A EB 6A EB 75
+EA0C:EB 80 EB 8B EB 96 EB A1 EB AC EB B7 EB C2 EB CD
+EA1C:EB DD EB E8 EB F3 EB FE EC 09 EC 14 EC 29							  '.)'
+
+* 5 pixel high characters
+*
+* Each bitmap is preceded by the character's width in pixels
+
+EA2A:03			; '0'
+     FF F0
+     F0 F0
+     F0 F0
+     F0 F0
+     FF F0
+
+EA35:03			; '1'
+     0F 00
+     0F 00
+     0F 00
+     0F 00
+     0F 00
+
+EA40:03			; '2'
+     FF F0
+     00 F0
+     FF F0
+     F0 00
+     FF F0
+
+EA4B:03			; '3'
+     FF F0
+     00 F0
+     0F F0
+     00 F0
+     FF F0
+
+EA56:03			; '4'
+     F0 F0
+     F0 F0
+     FF F0
+     00 F0
+     00 F0
+
+EA61:03			; '5'
+     FF F0
+     F0 00
+     FF F0
+     00 F0
+     FF F0
+
+EA6C:03			; '6'
+     FF F0
+     F0 00
+     FF F0
+     F0 F0
+     FF F0
+
+EA77:03			; '7'
+     FF F0
+     00 F0
+     00 F0
+     00 F0
+     00 F0
+
+EA82:03			; '8'
+     FF F0
+     F0 F0
+     FF F0
+     F0 F0
+     FF F0
+
+EA8D:03			; '9'
+     FF F0
+     F0 F0
+     FF F0
+     00 F0
+     00 F0
+
+EA98:01			; ' '
+     00
+     00
+     00
+     00
+     00
+
+EA9E:01			; '!'
+     F0
+     F0
+     F0
+     00
+     F0
+
+EAA4:03			; ','
+     00 00
+     00 00
+     00 00
+     FF 00
+     0F 00
+
+EAAF:01			; '.'
+     00
+     00
+     00
+     00
+     F0
+
+EAB5:05			; up arrow
+     00 F0 00
+     0F FF 00
+     FF FF F0
+     00 F0 00
+     00 F0 00
+
+EAC5:01			; ':'
+     00
+     F0
+     00
+     F0
+     00
+
+EACB:03			; '-'
+     00 00
+     00 00
+     FF F0
+     00 00
+     00 00
+
+EAD6:03			; 'A'
+     FF F0
+     F0 F0
+     FF F0
+     F0 F0
+     F0 F0
+
+EAE1:03 FF F0 F0 F0 FF 00 F0 F0 FF
+EAEB:F0 03 FF F0 F0 00 F0 00 F0 00 FF F0 03 FF 00 F0
+EAFB:F0 F0 F0 F0 F0 FF 00 03 FF F0 F0 00 FF 00 F0 00
+EB0B:FF F0 03 FF F0 F0 00 FF 00 F0 00 F0 00 03 FF F0
+EB1B:F0 00 F0 F0 F0 F0 FF F0 03 F0 F0 F0 F0 FF F0 F0
+EB2B:F0 F0 F0 03 FF F0 0F 00 0F 00 0F 00 FF F0 03 00
+EB3B:F0 00 F0 00 F0 F0 F0 FF F0 03 F0 F0 F0 F0 FF 00
+EB4B:F0 F0 F0 F0 03 F0 00 F0 00 F0 00 F0 00 FF F0 05
+EB5B:FF FF F0 F0 F0 F0 F0 F0 F0 F0 00 F0 F0 00 F0 03
+EB6B:FF F0 F0 F0 F0 F0 F0 F0 F0 F0 03 FF F0 F0 F0 F0
+EB7B:F0 F0 F0 FF F0 03 FF F0 F0 F0 FF F0 F0 00 F0 00
+EB8B:03 FF F0 F0 F0 FF F0 00 F0 00 F0 03 FF F0 F0 F0
+EB9B:FF 00 F0 F0 F0 F0 03 FF F0 F0 00 FF F0 00 F0 FF
+EBAB:F0 03 FF F0 0F 00 0F 00 0F 00 0F 00 03 F0 F0 F0
+EBBB:F0 F0 F0 F0 F0 FF F0 03 F0 F0 F0 F0 F0 F0 0F 00
+EBCB:0F 00 05 F0 00 F0 F0 00 F0 F0 F0 F0 F0 F0 F0 FF
+EBDB:FF F0 03 F0 F0 F0 F0 0F 00 F0 F0 F0 F0 03 F0 F0
+EBEB:F0 F0 FF F0 0F 00 0F 00 03 FF F0 00 F0 0F 00 F0
+EBFB:00 FF F0 03 0F 00 F0 00 F0 00 F0 00 0F 00 03 0F
+EC0B:00 00 F0 00 F0 00 F0 0F 00 07 00 0F 00 00 00 00
+EC1B:F0 00 FF 00 FF 00 00 00 F0 00 00 0F 00 00 03 00
+EC2B:F0 00 F0 0F 00 F0 00 F0 00
+
+
+* 7 pixel high character pointers
+
+EC34:EC 92 EC A5 EC B8 EC CB EC DE EC F1 ED 04 ED 17
+EC44:ED 2A ED 3D ED 50 ED 5D ED 6C ED 79 ED 86 ED A5
+EC54:ED B2 ED BF ED D2 ED E5 ED F8 EE 0B EE 1E EE 31
+EC64:EE 44 EE 57 EE 6A EE 7D EE 90 EE A3 EE B6 EE C9
+EC74:EE DC EE EF EF 02 EF 15 EF 28 EF 3B EF 4E EF 61
+EC84:EF 74 EF 87 EF 9A EF AD EF BA EF C7 EF DA
+
+* 7 pixel high characters
+*
+* Each bitmap is preceded by the character's width in pixels
+
+EC92:05 99 99 90 90 00 90 90 00
+EC9B:90 90 00 90 90 00 90 99 99 90 05 00 99 00 00 09  '................'
+ECAB:00 00 09 00 00 09 00 00 09 00 09 99 90 05 09 99  '................'
+ECBB:90 00 00 90 99 99 90 90 00 00 90 00 00 99 99 00  '................'
+ECCB:05 09 99 90 00 00 90 09 99 90 00 00 90 00 00 90  '................'
+ECDB:99 99 90 05 90 00 00 90 09 00 90 09 00 99 99 90  '................'
+ECEB:00 09 00 00 09 00 05 99 99 00 90 00 00 99 99 90  '................'
+ECFB:00 00 90 00 00 90 99 99 90 05 99 99 00 90 00 00  '................'
+ED0B:99 99 90 90 00 90 90 00 90 99 99 90 05 99 99 90  '................'
+ED1B:00 00 90 00 09 00 00 90 00 09 00 00 90 00 00 05  '................'
+ED2B:99 99 90 90 00 90 99 99 90 90 00 90 90 00 90 99  '................'
+ED3B:99 90 05 99 99 90 90 00 90 99 99 90 00 00 90 00  '................'
+ED4B:00 90 09 99 90 03 00 00 00 00 00 00 00 00 00 00  '................'
+ED5B:00 00 02 FF 00 FF 00 FF 00 FF 00 00 00 FF 00 FF  '................'
+ED6B:00 02 00 00 00 00 00 00 FF 00 FF 00 F0 00 02 00  '................'
+ED7B:00 00 00 00 00 00 00 FF 00 FF 00 09 FF FF FF FF  '................'
+ED8B:F0 FF FF FF FF F0 FF FF FF FF F0 FF FF FF FF F0  '................'
+ED9B:FF FF FF FF F0 FF FF FF FF F0 02 00 00 FF 00 FF  '................'
+EDAB:00 00 00 FF 00 FF 00 03 00 00 00 00 00 00 22 20  '.............." '
+EDBB:00 00 00 00 05 66 66 60 60 06 60 66 66 60 60 06  '.....ff``.`ff``.'
+EDCB:60 60 06 60 60 06 60 05 66 66 00 60 06 00 66 66  '``.``.`.ff.`..ff'
+EDDB:60 66 00 60 66 00 60 66 66 60 05 66 66 60 66 00  '`f.`f.`ff`.ff`f.'
+EDEB:00 66 00 00 66 00 00 66 00 00 66 66 60 05 66 66  '.f..f..f..ff`.ff'
+EDFB:00 66 00 60 66 00 60 66 00 60 66 00 60 66 66 00  '.f.`f.`f.`f.`ff.'
+EE0B:05 66 66 60 60 00 00 66 66 60 66 00 00 66 00 00  '.ff``..ff`f..f..'
+EE1B:66 66 60 05 66 66 60 60 00 00 66 66 60 66 00 00  'ff`.ff``..ff`f..'
+EE2B:66 00 00 66 00 00 05 66 66 60 66 06 60 66 00 00  'f..f...ff`f.`f..'
+EE3B:66 06 60 66 00 60 66 66 60 05 66 00 60 66 00 60  'f.`f.`ff`.f.`f.`'
+EE4B:66 66 60 66 00 60 66 00 60 66 00 60 04 06 60 00  'ff`f.`f.`f.`..`.'
+EE5B:06 60 00 06 60 00 06 60 00 06 60 00 06 60 00 05  '.`..`..`..`..`..'
+EE6B:00 00 60 00 00 60 00 00 60 00 00 60 66 00 60 66  '..`..`..`..`f.`f'
+EE7B:66 60 05 66 00 60 66 06 00 66 60 00 66 60 00 66  'f`.f.`f..f`.f`.f'
+EE8B:06 00 66 00 60 05 60 00 00 60 00 00 60 00 00 60  '..f.`.`..`..`..`'
+EE9B:00 00 66 66 60 66 66 60 05 66 66 60 60 60 60 60  '..ff`ff`.ff`````'
+EEAB:60 60 60 00 60 60 00 60 60 00 60 05 66 66 60 60  '```.``.``.`.ff``'
+EEBB:00 60 66 00 60 66 00 60 66 00 60 66 00 60 05 66  '.`f.`f.`f.`f.`.f'
+EECB:66 60 60 06 60 60 00 60 60 00 60 60 00 60 66 66  'f``.``.``.``.`ff'
+EEDB:60 05 66 66 60 60 00 60 66 66 60 66 00 00 66 00  '`.ff``.`ff`f..f.'
+EEEB:00 66 00 00 05 66 66 60 66 00 60 66 00 60 66 00  '.f...ff`f.`f.`f.'
+EEFB:60 66 06 00 66 60 60 05 66 66 00 60 06 00 66 66  '`f..f``.ff.`..ff'
+EF0B:60 66 00 60 66 00 60 66 00 60 05 66 66 60 60 00  '`f.`f.`f.`.ff``.'
+EF1B:00 66 66 60 00 00 60 66 00 60 66 66 60 05 66 66  '.ff`..`f.`ff`.ff'
+EF2B:60 00 60 00 00 66 00 00 66 00 00 66 00 00 66 00  '`.`..f..f..f..f.'
+EF3B:05 60 06 60 60 06 60 60 06 60 60 06 60 60 06 60  '.`.``.``.``.``.`'
+EF4B:66 66 60 05 66 00 60 66 00 60 66 00 60 66 00 60  'ff`.f.`f.`f.`f.`'
+EF5B:06 06 00 00 60 00 05 60 00 60 60 00 60 60 00 60  '....`..`.``.``.`'
+EF6B:60 60 60 60 60 60 66 66 60 05 60 00 60 06 06 00  '``````ff`.`.`...'
+EF7B:00 60 00 00 60 00 06 06 00 60 00 60 05 66 00 60  '.`..`....`.`.f.`'
+EF8B:66 00 60 66 66 60 00 60 00 00 60 00 00 60 00 05  'f.`ff`.`..`..`..'
+EF9B:66 66 60 00 06 00 00 60 00 06 00 00 66 66 60 66  'ff`....`....ff`f'
+EFAB:66 60 03 00 F0 0F 00 F0 00 F0 00 0F 00 00 F0 03  'f`..............'
+EFBB:F0 00 0F 00 00 F0 00 F0 0F 00 F0 00 04 00 0F 00  '................'
+EFCB:00 F0 00 00 F0 00 0F 00 00 0F 00 00 F0 00 00 05  '................'
+EFDB:00 F0 00 0F F0 00 FF FF F0 0F F0 00 00 F0 00 00  '................'
+EFEB:00 00 FF FF FF						 '.....'
+
+* Vestigial 6809 vectors--not used.
+
+EFF0:D1 06
+EFF2:D1 06
+EFF4:D1 06
+EFF6:D1 06
+EFF8:DC 56
+EFFA:D1 06
+EFFC:D1 06
+EFFE:D1 06
+
+F000:7E F4 31		JMP   $F431	; RESET
+F003:7E F4 A0		JMP   $F4A0
+F006:7E F6 1B		JMP   $F61B
+F009:7E F0 1D		JMP   $F01D	; Init $B3E4 list
+F00C:7E F0 D7		JMP   $F0D7
+F00F:7E F0 66		JMP   $F066
+F012:7E F3 4A		JMP   $F34A
+
+F015:F1 24 F1 D5 F3 68 F3 EB
+
+
+************************************************************
+*
+* Init $B3E4 list
+*
+
+* List is 8 elements long; each element is 242 bytes
+
+F01D:34 16		PSHS  X,B,A
+F01F:8E B3 E4		LDX   #$B3E4
+F022:9F AD		STX   $AD	; init head to first elem in list
+F024:30 89 00 F2	LEAX  242,X
+F028:AF 89 FF 0E	STX   -242,X
+F02C:8C BA 82		CMPX  #$BA82
+
+* BUG! should be loop up to $F024 here, like other list initializers...
+
+F02F:CC 00 00		LDD   #$0000
+F032:ED 84		STD   ,X	; zero last link
+F034:DD A9		STD   $A9
+F036:DD AB		STD   $AB
+F038:35 96		PULS  PC,X,B,A
+
+
+F03A:34 10		PSHS  X
+F03C:DE AD		LDU   $AD
+F03E:27 0E		BEQ   $F04E
+
+F040:AE C4		LDX   ,U
+F042:9F AD		STX   $AD
+F044:9E A9		LDX   $A9
+F046:AF C4		STX   ,U
+F048:DF A9		STU   $A9
+F04A:1C FE		ANDC  #$FE
+F04C:35 90		PULS  PC,X
+
+F04E:1A 01		ORC   #$01
+F050:35 90		PULS  PC,X
+
+F052:34 10		PSHS  X
+F054:DE AD		LDU   $AD
+F056:27 F6		BEQ   $F04E
+
+F058:AE C4		LDX   ,U
+F05A:9F AD		STX   $AD
+F05C:9E AB		LDX   $AB
+F05E:AF C4		STX   ,U
+F060:DF AB		STU   $AB
+F062:1C FE		ANDC  #$FE
+F064:35 90		PULS  PC,X
+
+F066:34 76		PSHS  U,Y,X,B,A
+F068:BD F0 52		JSR   $F052
+F06B:25 66		BCS   $F0D3
+
+F06D:EC 04		LDD   4,X
+F06F:AE 02		LDX   2,X
+F071:ED 49		STD   9,U
+F073:D6 A6		LDB   $A6
+F075:E7 44		STB   4,U
+F077:E0 49		SUBB  9,U
+F079:25 04		BCS   $F07F
+
+F07B:E1 84		CMPB  ,X
+F07D:25 0A		BCS   $F089
+
+F07F:E6 84		LDB   ,X
+F081:E7 45		STB   5,U
+F083:EB 49		ADDB  9,U
+F085:E7 44		STB   4,U
+F087:20 03		BRA   $F08C
+
+F089:58			LSLB
+F08A:E7 45		STB   5,U
+F08C:CC 46 46		LDD   #$4646
+F08F:ED 4F		STD   15,U
+F091:EC 84		LDD   ,X
+F093:ED 4B		STD   11,U
+F095:86 01		LDA   #$01
+F097:A7 C8 11		STA   17,U
+F09A:88 04		EORA  #$04
+F09C:C8 04		EORB  #$04
+F09E:ED 4D		STD   13,U
+F0A0:AE 02		LDX   2,X
+F0A2:AF 42		STX   2,U
+F0A4:CC 10 00		LDD   #$1000
+F0A7:ED 46		STD   6,U
+F0A9:30 C8 11		LEAX  17,U
+F0AC:9F B0		STX   $B0
+F0AE:10 AE 42		LDY   2,U
+F0B1:E6 4C		LDB   12,U
+F0B3:D7 B3		STB   $B3
+F0B5:9E B0		LDX   $B0
+F0B7:30 01		LEAX  1,X
+F0B9:9F B0		STX   $B0
+F0BB:A6 4B		LDA   11,U
+F0BD:97 B2		STA   $B2
+F0BF:A6 A0		LDA   ,Y+
+F0C1:A7 84		STA   ,X
+F0C3:3A			ABX
+F0C4:48			LSLA
+F0C5:48			LSLA
+F0C6:48			LSLA
+F0C7:48			LSLA
+F0C8:A7 84		STA   ,X
+F0CA:3A			ABX
+F0CB:0A B2		DEC   $B2
+F0CD:26 F0		BNE   $F0BF
+
+F0CF:0A B3		DEC   $B3
+F0D1:26 E2		BNE   $F0B5
+
+F0D3:1C FE		ANDC  #$FE
+F0D5:35 F6		PULS  PC,U,Y,X,B,A
+
+F0D7:34 76		PSHS  U,Y,X,B,A
+F0D9:BD D0 15		JSR   $D015	; erase shape
+F0DC:BD F0 3A		JSR   $F03A
+F0DF:25 F2		BCS   $F0D3
+
+F0E1:EC 04		LDD   4,X
+F0E3:AE 02		LDX   2,X
+F0E5:ED 49		STD   9,U
+F0E7:D6 A6		LDB   $A6
+F0E9:E7 44		STB   4,U
+F0EB:E0 49		SUBB  9,U
+F0ED:25 04		BCS   $F0F3
+
+F0EF:E1 84		CMPB  ,X
+F0F1:25 0A		BCS   $F0FD
+
+F0F3:E6 84		LDB   ,X
+F0F5:E7 45		STB   5,U
+F0F7:EB 49		ADDB  9,U
+F0F9:E7 44		STB   4,U
+F0FB:20 03		BRA   $F100
+
+F0FD:58			LSLB
+F0FE:E7 45		STB   5,U
+F100:CC 46 46		LDD   #$4646
+F103:ED 4F		STD   15,U
+F105:EC 84		LDD   ,X
+F107:ED 4B		STD   11,U
+F109:48			LSLA
+F10A:A7 C8 11		STA   17,U
+F10D:86 01		LDA   #$01
+F10F:88 04		EORA  #$04
+F111:C8 04		EORB  #$04
+F113:ED 4D		STD   13,U
+F115:AE 02		LDX   2,X
+F117:AF 42		STX   2,U
+F119:CC 00 00		LDD   #$0000
+F11C:ED 46		STD   6,U
+F11E:86 10		LDA   #$10
+F120:A7 48		STA   8,U
+F122:20 85		BRA   $F0A9
+
+F124:A7 A4		STA   ,Y
+F126:BF CA 02		STX   $CA02
+F129:FF CA 00		STU   $CA00
+F12C:3A			ABX
+F12D:9B A8		ADDA  $A8
+F12F:A7 A4		STA   ,Y
+F131:BF CA 02		STX   $CA02
+F134:FF CA 00		STU   $CA00
+F137:3A			ABX
+F138:9B A8		ADDA  $A8
+F13A:A7 A4		STA   ,Y
+F13C:BF CA 02		STX   $CA02
+F13F:FF CA 00		STU   $CA00
+F142:3A			ABX
+F143:9B A8		ADDA  $A8
+F145:A7 A4		STA   ,Y
+F147:BF CA 02		STX   $CA02
+F14A:FF CA 00		STU   $CA00
+F14D:3A			ABX
+F14E:9B A8		ADDA  $A8
+F150:A7 A4		STA   ,Y
+F152:BF CA 02		STX   $CA02
+F155:FF CA 00		STU   $CA00
+F158:3A			ABX
+F159:9B A8		ADDA  $A8
+F15B:A7 A4		STA   ,Y
+F15D:BF CA 02		STX   $CA02
+F160:FF CA 00		STU   $CA00
+F163:3A			ABX
+F164:9B A8		ADDA  $A8
+F166:A7 A4		STA   ,Y
+F168:BF CA 02		STX   $CA02
+F16B:FF CA 00		STU   $CA00
+F16E:3A			ABX
+F16F:9B A8		ADDA  $A8
+F171:A7 A4		STA   ,Y
+F173:BF CA 02		STX   $CA02
+F176:FF CA 00		STU   $CA00
+F179:3A			ABX
+F17A:9B A8		ADDA  $A8
+F17C:A7 A4		STA   ,Y
+F17E:BF CA 02		STX   $CA02
+F181:FF CA 00		STU   $CA00
+F184:3A			ABX
+F185:9B A8		ADDA  $A8
+F187:A7 A4		STA   ,Y
+F189:BF CA 02		STX   $CA02
+F18C:FF CA 00		STU   $CA00
+F18F:3A			ABX
+F190:9B A8		ADDA  $A8
+F192:A7 A4		STA   ,Y
+F194:BF CA 02		STX   $CA02
+F197:FF CA 00		STU   $CA00
+F19A:3A			ABX
+F19B:9B A8		ADDA  $A8
+F19D:A7 A4		STA   ,Y
+F19F:BF CA 02		STX   $CA02
+F1A2:FF CA 00		STU   $CA00
+F1A5:3A			ABX
+F1A6:9B A8		ADDA  $A8
+F1A8:A7 A4		STA   ,Y
+F1AA:BF CA 02		STX   $CA02
+F1AD:FF CA 00		STU   $CA00
+F1B0:3A			ABX
+F1B1:9B A8		ADDA  $A8
+F1B3:A7 A4		STA   ,Y
+F1B5:BF CA 02		STX   $CA02
+F1B8:FF CA 00		STU   $CA00
+F1BB:3A			ABX
+F1BC:9B A8		ADDA  $A8
+F1BE:A7 A4		STA   ,Y
+F1C0:BF CA 02		STX   $CA02
+F1C3:FF CA 00		STU   $CA00
+F1C6:3A			ABX
+F1C7:9B A8		ADDA  $A8
+F1C9:A7 A4		STA   ,Y
+F1CB:BF CA 02		STX   $CA02
+F1CE:FF CA 00		STU   $CA00
+F1D1:1C EF		ANDC  #$EF
+F1D3:35 A0		PULS  PC,Y
+
+F1D5:A7 C4		STA   ,U
+F1D7:E7 84		STB   ,X
+F1D9:9B A8		ADDA  $A8
+F1DB:A7 C4		STA   ,U
+F1DD:E7 84		STB   ,X
+F1DF:9B A8		ADDA  $A8
+F1E1:A7 C4		STA   ,U
+F1E3:E7 84		STB   ,X
+F1E5:9B A8		ADDA  $A8
+F1E7:A7 C4		STA   ,U
+F1E9:E7 84		STB   ,X
+F1EB:9B A8		ADDA  $A8
+F1ED:A7 C4		STA   ,U
+F1EF:E7 84		STB   ,X
+F1F1:9B A8		ADDA  $A8
+F1F3:A7 C4		STA   ,U
+F1F5:E7 84		STB   ,X
+F1F7:9B A8		ADDA  $A8
+F1F9:A7 C4		STA   ,U
+F1FB:E7 84		STB   ,X
+F1FD:9B A8		ADDA  $A8
+F1FF:A7 C4		STA   ,U
+F201:E7 84		STB   ,X
+F203:9B A8		ADDA  $A8
+F205:A7 C4		STA   ,U
+F207:E7 84		STB   ,X
+F209:9B A8		ADDA  $A8
+F20B:A7 C4		STA   ,U
+F20D:E7 84		STB   ,X
+F20F:9B A8		ADDA  $A8
+F211:A7 C4		STA   ,U
+F213:E7 84		STB   ,X
+F215:9B A8		ADDA  $A8
+F217:A7 C4		STA   ,U
+F219:E7 84		STB   ,X
+F21B:9B A8		ADDA  $A8
+F21D:A7 C4		STA   ,U
+F21F:E7 84		STB   ,X
+F221:9B A8		ADDA  $A8
+F223:A7 C4		STA   ,U
+F225:E7 84		STB   ,X
+F227:9B A8		ADDA  $A8
+F229:A7 C4		STA   ,U
+F22B:E7 84		STB   ,X
+F22D:9B A8		ADDA  $A8
+F22F:A7 C4		STA   ,U
+F231:E7 84		STB   ,X
+F233:1C EF		ANDC  #$EF
+F235:39			RTS
+
+F236:E6 A8 11		LDB   17,Y
+F239:C0 10		SUBB  #$10
+F23B:50			NEGB
+F23C:86 06		LDA   #$06
+F23E:3D			MUL
+F23F:8E F1 D5		LDX   #$F1D5
+F242:3A			ABX
+F243:34 10		PSHS  X
+F245:A6 26		LDA   6,Y
+F247:97 A8		STA   $A8
+F249:EC 29		LDD   9,Y
+F24B:1A 10		ORC   #$10	; turn off interrupts
+F24D:F7 CA 05		STB   $CA05
+F250:E6 2F		LDB   15,Y
+F252:CA 10		ORB   #$10
+F254:C4 F7		ANDB  #$F7
+F256:CE 00 00		LDU   #$0000
+F259:FF CA 01		STU   $CA01
+F25C:F7 CA 03		STB   $CA03
+F25F:EE 2D		LDU   13,Y
+F261:FF CA 06		STU   $CA06
+F264:CE CA 04		LDU   #$CA04
+F267:8E CA 00		LDX   #$CA00
+F26A:39			RTS
+
+F26B:CE 98 A9		LDU   #$98A9
+F26E:10 AC C4		CMPY  ,U
+F271:27 08		BEQ   $F27B
+
+F273:EE C4		LDU   ,U
+F275:26 F7		BNE   $F26E
+
+F277:1A 10		ORC   #$10	; turn off interrupts
+F279:20 FE		BRA   $F279
+
+F27B:EC A4		LDD   ,Y
+F27D:ED C4		STD   ,U
+F27F:DC AD		LDD   $AD
+F281:ED A4		STD   ,Y
+F283:10 9F AD		STY   $AD
+F286:31 C4		LEAY  ,U
+F288:39			RTS
+
+F289:EC 26		LDD   6,Y
+F28B:83 00 80		SUBD  #$0080
+F28E:A1 26		CMPA  6,Y
+F290:26 03		BNE   $F295
+
+F292:E7 27		STB   7,Y
+F294:39			RTS
+
+F295:BD F2 36		JSR   $F236
+F298:96 59		LDA   $59
+F29A:26 0B		BNE   $F2A7
+
+F29C:D6 5F		LDB   $5F
+F29E:E7 2A		STB   10,Y
+F2A0:E6 25		LDB   5,Y
+F2A2:54			LSRB
+F2A3:DB 5E		ADDB  $5E
+F2A5:E7 24		STB   4,Y
+F2A7:A6 2B		LDA   11,Y
+F2A9:48			LSLA
+F2AA:4A			DECA
+F2AB:97 AF		STA   $AF
+F2AD:EC 26		LDD   6,Y
+F2AF:83 00 80		SUBD  #$0080
+F2B2:4D			TSTA
+F2B3:22 15		BHI   $F2CA
+
+F2B5:CE 98 AB		LDU   #$98AB
+F2B8:7E F2 6E		JMP   $F26E
+
+F2BB:6A 28		DEC   8,Y
+F2BD:27 AC		BEQ   $F26B
+
+F2BF:A6 2B		LDA   11,Y
+F2C1:48			LSLA
+F2C2:4A			DECA
+F2C3:97 AF		STA   $AF
+F2C5:EC 26		LDD   6,Y
+F2C7:C3 01 00		ADDD  #$0100
+F2CA:ED 26		STD   6,Y
+F2CC:97 A8		STA   $A8
+F2CE:44			LSRA
+F2CF:E6 25		LDB   5,Y
+F2D1:26 01		BNE   $F2D4
+
+F2D3:4F			CLRA
+F2D4:97 B2		STA   $B2
+F2D6:30 A8 12		LEAX  18,Y
+F2D9:96 A8		LDA   $A8
+F2DB:E6 25		LDB   5,Y
+F2DD:3D			MUL
+F2DE:DD B0		STD   $B0
+F2E0:E6 24		LDB   4,Y
+F2E2:4F			CLRA
+F2E3:93 B0		SUBD  $B0
+F2E5:DB B2		ADDB  $B2
+F2E7:89 00		ADCA  #$00
+F2E9:26 04		BNE   $F2EF
+
+F2EB:C1 07		CMPB  #$07
+F2ED:22 16		BHI   $F305
+
+F2EF:0A AF		DEC   $AF
+F2F1:DB A8		ADDB  $A8
+F2F3:89 00		ADCA  #$00
+F2F5:26 F8		BNE   $F2EF
+
+F2F7:C1 07		CMPB  #$07
+F2F9:23 F4		BLS   $F2EF
+
+F2FB:E7 29		STB   9,Y
+F2FD:EC 2B		LDD   11,Y
+F2FF:90 AF		SUBA  $AF
+F301:3D			MUL
+F302:3A			ABX
+F303:20 02		BRA   $F307
+
+F305:E7 29		STB   9,Y
+F307:96 AF		LDA   $AF
+F309:4A			DECA
+F30A:D6 A8		LDB   $A8
+F30C:3D			MUL
+F30D:EB 29		ADDB  9,Y
+F30F:89 00		ADCA  #$00
+F311:27 08		BEQ   $F31B
+
+F313:0A AF		DEC   $AF
+F315:D0 A8		SUBB  $A8
+F317:82 00		SBCA  #$00
+F319:26 F8		BNE   $F313
+
+F31B:C1 8F		CMPB  #$8F
+F31D:24 F4		BCC   $F313
+
+F31F:96 AF		LDA   $AF
+F321:10 27 FF 46	LBEQ  $F26B
+
+F325:A7 A8 11		STA   17,Y
+F328:80 10		SUBA  #$10
+F32A:40			NEGA
+F32B:C6 0B		LDB   #$0B
+F32D:3D			MUL
+F32E:C3 F1 24		ADDD  #$F124
+F331:34 26		PSHS  Y,B,A
+F333:EE 2F		LDU   15,Y
+F335:EC 2D		LDD   13,Y
+F337:1A 10		ORC   #$10	; turn off interrupts
+F339:FD CA 06		STD   $CA06
+F33C:A6 2A		LDA   10,Y
+F33E:B7 CA 05		STA   $CA05
+F341:E6 2C		LDB   12,Y
+F343:A6 29		LDA   9,Y
+F345:10 8E CA 04	LDY   #$CA04
+F349:39			RTS
+
+F34A:10 9E A9		LDY   $A9
+F34D:27 0B		BEQ   $F35A
+
+F34F:BD F2 36		JSR   $F236
+F352:BD F2 BB		JSR   $F2BB
+F355:10 AE A4		LDY   ,Y
+F358:26 F5		BNE   $F34F
+
+F35A:10 9E AB		LDY   $AB
+F35D:27 08		BEQ   $F367
+
+F35F:BD F2 89		JSR   $F289
+F362:10 AE A4		LDY   ,Y
+F365:26 F8		BNE   $F35F
+
+F367:39			RTS
+
+F368:17 21 90 0D 21 08 22 90 0C 22 07 21 41 21 90 0B
+F378:21 41 21 06 21 42 21 90 0A 21 42 21 05 21 43 21
+F388:90 09 21 43 21 04 21 44 21 90 08 21 44 21 03 21
+F398:45 21 90 08 21 44 21 02 21 46 21 90 08 21 44 21
+F3A8:01 21 43 21 43 21 90 08 21 43 21 01 21 43 22 43
+F3B8:21 90 08 21 43 21 01 21 42 21 01 21 43 21 90 C4
+F3C8:08 21 43 23 42 21 01 21 43 21 90 08 21 48 21 01
+F3D8:21 43 21 90 C2 08 2A 01 21 43 21 90 12 21 44 21
+F3E8:90 C3 A0 0B 28 44 21 90 0A 21 4A 23 90 09 21 4B
+F3F8:21 90 08 21 4D 21 90 07 21 44 27 44 21 90 06 21
+F408:44 21 07 21 44 21 90 05 21 44 21 09 21 44 21 90
+F418:04 21 44 2D 44 21 90 03 21 57 21 90 02 21 59 21
+F428:90 01 21 5B 21 90 3F 90 A0
+
+************************************************************
+*
+*		COLD RESET
+*
+
+F431:1A FF		ORC   #$FF
+
+* Init stack pointer, altho' it isn't used until we've tested RAM.
+
+F433:10 CE BF 70	LDS   #$BF70
+
+* Fiddle the PIA.
+
+F437:7F C8 0D		CLR   $C80D
+F43A:7F C8 0C		CLR   $C80C
+F43D:86 3C		LDA   #$3C
+F43F:B7 C8 0D		STA   $C80D
+F442:7F C8 0F		CLR   $C80F
+F445:86 C0		LDA   #$C0
+F447:B7 C8 0E		STA   $C80E
+F44A:86 3C		LDA   #$3C
+F44C:B7 C8 0F		STA   $C80F
+F44F:86 C0		LDA   #$C0
+F451:B7 C8 0E		STA   $C80E
+
+F454:86 01		LDA   #$01	; ROM read, screen right side up
+F456:B7 C9 00		STA   $C900
+
+* Set up color registers.
+
+F459:8E F6 0B		LDX   #$F60B
+F45C:10 8E C0 00	LDY   #$C000
+F460:EC 81		LDD   ,X++
+F462:ED A1		STD   ,Y++
+F464:8C F6 1B		CMPX  #$F61B
+F467:25 F7		BCS   $F460
+
+* Test RAM.
+
+F469:86 02		LDA   #$02	; test twice
+F46B:10 8E F4 75	LDY   #$F475	; return address
+F46F:8E 00 00		LDX   #$0000	; initial seed
+F472:7E FD 59		JMP   $FD59
+
+* Check ROM checksums.
+
+F475:10 8E F4 7C	LDY   #$F47C
+F479:7E FF 33		JMP   $FF33
+
+* Things seem to be okay at this point...
+
+F47C:86 34		LDA   #$34
+F47E:B7 C8 0D		STA   $C80D
+F481:B7 C8 0F		STA   $C80F
+F484:7F C8 0E		CLR   $C80E
+F487:86 98		LDA   #$98
+F489:1F 8B		TFR   A,DP	; direct page at $9800
+F48B:10 CE BF 70	LDS   #$BF70	; top of stack
+F48F:BD D0 12		JSR   $D012	; clear screen
+
+* Everything set. Print "INITIAL TESTS INDICATE: OPERATIONAL", delay some
+* then jump into game cold start.
+
+F492:86 01		LDA   #$01	; "INITIAL TESTS...OPERATIONAL"
+F494:BD 5F 99		JSR   $5F99	; print message
+F497:10 8E D0 00	LDY   #$D000	; 'return' to game cold start
+F49B:86 07		LDA   #$07	; delay 7 seconds
+F49D:7E FE 73		JMP   $FE73
+
+F4A0:86 00		LDA   #$00
+F4A2:A7 45		STA   5,U
+F4A4:96 CE		LDA   $CE
+F4A6:26 0F		BNE   $F4B7
+
+F4A8:86 02		LDA   #$02
+F4AA:8E F4 B0		LDX   #$F4B0
+F4AD:7E D0 66		JMP   $D066
+
+F4B0:B6 C8 0C		LDA   $C80C
+F4B3:85 02		BITA  #$02
+F4B5:26 03		BNE   $F4BA
+
+F4B7:7E D0 63		JMP   $D063	; remove thread
+
+F4BA:BD D0 60		JSR   $D060
+F4BD:BD D0 99		JSR   $D099
+F4C0:86 FF		LDA   #$FF
+F4C2:97 CE		STA   $CE
+F4C4:97 59		STA   $59
+F4C6:BD F5 F5		JSR   $F5F5
+F4C9:BD D0 12		JSR   $D012	; clear screen
+F4CC:B6 C8 0C		LDA   $C80C
+F4CF:46			RORA
+F4D0:10 25 06 0E	LBCS  $FAE2
+
+F4D4:1A BF		ORC   #$BF
+F4D6:10 8E F4 DD	LDY   #$F4DD
+F4DA:7E FF 01		JMP   $FF01
+
+F4DD:86 39		LDA   #$39
+F4DF:B7 CB FF		STA   $CBFF
+F4E2:B6 C8 0C		LDA   $C80C
+F4E5:85 02		BITA  #$02
+F4E7:26 F4		BNE   $F4DD
+
+F4E9:10 8E F4 F0	LDY   #$F4F0
+F4ED:7E FF 33		JMP   $FF33
+
+F4F0:86 98		LDA   #$98
+F4F2:1F 8B		TFR   A,DP
+F4F4:BD D0 12		JSR   $D012	; clear screen
+
+F4F7:86 04		LDA   #$04	; message unknown
+F4F9:BD 5F 99		JSR   $5F99	; character output
+F4FC:C6 03		LDB   #$03
+F4FE:8E 70 00		LDX   #$7000
+F501:86 39		LDA   #$39
+F503:B7 CB FF		STA   $CBFF
+F506:B6 C8 0C		LDA   $C80C
+F509:85 02		BITA  #$02
+F50B:26 16		BNE   $F523
+
+F50D:30 1F		LEAX  -1,X
+F50F:8C 00 00		CMPX  #$0000
+F512:26 ED		BNE   $F501
+
+F514:5A			DECB
+F515:26 E7		BNE   $F4FE
+
+F517:10 8E F5 23	LDY   #$F523
+F51B:8E 00 00		LDX   #$0000
+F51E:86 FF		LDA   #$FF
+F520:7E FD 59		JMP   $FD59
+
+F523:86 01		LDA   #$01
+F525:B7 C9 00		STA   $C900
+F528:86 98		LDA   #$98
+F52A:1F 8B		TFR   A,DP
+F52C:BD D0 12		JSR   $D012	; clear screen
+
+F52F:86 05		LDA   #$05	; message unknown
+F531:BD 5F 99		JSR   $5F99	; character output
+F534:86 39		LDA   #$39
+F536:B7 CB FF		STA   $CBFF
+F539:B6 C8 0C		LDA   $C80C
+F53C:85 02		BITA  #$02
+F53E:26 F4		BNE   $F534
+
+F540:8E 98 00		LDX   #$9800
+F543:4F			CLRA
+F544:A7 80		STA   ,X+
+F546:C6 39		LDB   #$39
+F548:F7 CB FF		STB   $CBFF
+F54B:8C BF 71		CMPX  #$BF71
+F54E:25 F4		BCS   $F544
+
+F550:BD F5 F5		JSR   $F5F5
+F553:CC A5 5A		LDD   #$A55A
+F556:DD 85		STD   $85
+F558:97 CE		STA   $CE
+F55A:BD D0 36		JSR   $D036
+F55D:BD D0 C0		JSR   $D0C0
+F560:BD D0 99		JSR   $D099
+F563:86 FF		LDA   #$FF
+F565:97 59		STA   $59
+F567:BD D0 54		JSR   $D054	; install thread
+F56A:F5 73				; thread's entry address
+F56C:8D 7A		BSR   $F5E8
+F56E:1C 00		ANDC  #$00
+F570:7E D0 96		JMP   $D096
+
+F573:BD FA A3		JSR   $FAA3
+F576:BD FC F4		JSR   $FCF4
+F579:1C 01		ANDC  #$01
+F57B:86 06		LDA   #$06
+F57D:24 28		BCC   $F5A7
+
+F57F:C6 2F		LDB   #$2F
+F581:8C CD 00		CMPX  #$CD00
+F584:22 02		BHI   $F588
+
+F586:C6 1F		LDB   #$1F
+F588:1A 10		ORC   #$10	; turn off interrupts
+F58A:10 CE F5 93	LDS   #$F593
+F58E:86 03		LDA   #$03
+F590:7E FE 87		JMP   $FE87
+
+F593:10 CE BF 70	LDS   #$BF70
+F597:8D 4F		BSR   $F5E8
+F599:86 98		LDA   #$98
+F59B:1F 8B		TFR   A,DP
+F59D:1C EF		ANDC  #$EF
+F59F:86 07		LDA   #$07
+F5A1:C1 1F		CMPB  #$1F
+F5A3:22 02		BHI   $F5A7
+
+F5A5:86 08		LDA   #$08	; message unknown
+F5A7:BD D0 12		JSR   $D012	; clear screen - A gets saved
+F5AA:BD 5F 99		JSR   $5F99	; character output
+F5AD:BD FA A3		JSR   $FAA3
+F5B0:DE 15		LDU   $15
+F5B2:6F 49		CLR   9,U
+F5B4:BD FC 84		JSR   $FC84
+F5B7:BD FC 8D		JSR   $FC8D
+F5BA:BD FA D1		JSR   $FAD1
+F5BD:24 F8		BCC   $F5B7
+
+F5BF:86 3F		LDA   #$3F
+F5C1:B7 C8 0E		STA   $C80E
+F5C4:86 01		LDA   #$01
+F5C6:8E F5 CC		LDX   #$F5CC
+F5C9:7E D0 66		JMP   $D066
+
+F5CC:86 2C		LDA   #$2C
+F5CE:B7 C8 0E		STA   $C80E
+F5D1:BD FA A3		JSR   $FAA3
+F5D4:BD F9 1C		JSR   $F91C
+F5D7:BD FA A3		JSR   $FAA3
+F5DA:BD F8 7C		JSR   $F87C
+F5DD:BD FA D1		JSR   $FAD1
+F5E0:24 03		BCC   $F5E5
+
+F5E2:BD FA A3		JSR   $FAA3
+F5E5:7E F6 77		JMP   $F677
+
+F5E8:7F C8 0E		CLR   $C80E
+F5EB:86 34		LDA   #$34
+F5ED:B7 C8 0D		STA   $C80D
+F5F0:4C			INCA
+F5F1:B7 C8 0F		STA   $C80F
+F5F4:39			RTS
+
+F5F5:8E F6 0B		LDX   #$F60B
+F5F8:10 8E 98 00	LDY   #$9800
+F5FC:CE C0 00		LDU   #$C000
+F5FF:EC 81		LDD   ,X++
+F601:ED A1		STD   ,Y++
+F603:ED C1		STD   ,U++
+F605:8C F6 1B		CMPX  #$F61B
+F608:25 F5		BCS   $F5FF
+
+F60A:39			RTS
+
+* Initial color register values, installed at $F459.
+
+F60B:00 07 17 C7 1F 3F 38 C0 A4 FF 38 17 CC 81 81 07
+
+F61B:86 3F		LDA   #$3F
+F61D:1F 8A		TFR   A,CC
+F61F:8D D4		BSR   $F5F5
+F621:86 85		LDA   #$85
+F623:BE B9 EA		LDX   $B9EA
+F626:30 89 12 34	LEAX  4660,X
+F62A:10 8E F6 31	LDY   #$F631
+F62E:7E FD 59		JMP   $FD59
+
+F631:10 8E F6 38	LDY   #$F638
+F635:7E FF 33		JMP   $FF33
+
+F638:86 98		LDA   #$98
+F63A:1F 8B		TFR   A,DP
+F63C:10 CE BF 70	LDS   #$BF70
+F640:BD FC F4		JSR   $FCF4
+F643:24 1F		BCC   $F664
+
+F645:86 03		LDA   #$03
+F647:8D 26		BSR   $F66F
+F649:86 08		LDA   #$08
+F64B:8C CD 00		CMPX  #$CD00
+F64E:23 02		BLS   $F652
+
+F650:86 07		LDA   #$07	; message unknown
+F652:C6 39		LDB   #$39
+F654:F7 CB FF		STB   $CBFF
+F657:BD D0 12		JSR   $D012	; clear screen - A gets saved
+F65A:BD 5F 99		JSR   $5F99	; character output
+F65D:86 39		LDA   #$39
+F65F:B7 CB FF		STA   $CBFF
+F662:20 F9		BRA   $F65D
+
+F664:8D 47		BSR   $F6AD
+F666:10 8E F6 1B	LDY   #$F61B
+F66A:86 04		LDA   #$04
+F66C:7E FE 73		JMP   $FE73
+
+F66F:10 8E F6 76	LDY   #$F676
+F673:BD FF 11		JSR   $FF11
+F676:39			RTS
+
+F677:BD F6 FE		JSR   $F6FE
+F67A:BD FA A3		JSR   $FAA3
+F67D:BD D0 12		JSR   $D012	; clear screen
+F680:86 07		LDA   #$07
+F682:97 00		STA   $00
+F684:BD FA A3		JSR   $FAA3
+F687:86 38		LDA   #$38
+F689:97 00		STA   $00
+F68B:BD FA A3		JSR   $FAA3
+F68E:86 C0		LDA   #$C0
+F690:97 00		STA   $00
+F692:BD FA A3		JSR   $FAA3
+F695:8D 16		BSR   $F6AD
+F697:BD FA A3		JSR   $FAA3
+F69A:7E FA E2		JMP   $FAE2
+
+F69D:9F 2B		STX   $2B
+F69F:30 89 10 00	LEAX  4096,X
+F6A3:30 89 FF 00	LEAX  -256,X
+F6A7:8C 98 00		CMPX  #$9800
+F6AA:22 F7		BHI   $F6A3
+
+F6AC:39			RTS
+
+F6AD:8E 98 00		LDX   #$9800
+F6B0:10 8E F6 EE	LDY   #$F6EE
+F6B4:CE C0 00		LDU   #$C000
+F6B7:EC A1		LDD   ,Y++
+F6B9:ED 81		STD   ,X++
+F6BB:ED C1		STD   ,U++
+F6BD:86 39		LDA   #$39
+F6BF:B7 CB FF		STA   $CBFF
+F6C2:8C 98 10		CMPX  #$9810
+F6C5:25 F0		BCS   $F6B7
+
+F6C7:CC 00 00		LDD   #$0000
+F6CA:8E 00 00		LDX   #$0000
+F6CD:8D CE		BSR   $F69D
+F6CF:ED 83		STD   ,--X
+F6D1:34 02		PSHS  A
+F6D3:86 39		LDA   #$39
+F6D5:B7 CB FF		STA   $CBFF
+F6D8:35 02		PULS  A
+F6DA:9C 2B		CMPX  $2B
+F6DC:26 F1		BNE   $F6CF
+
+F6DE:30 89 09 00	LEAX  2304,X
+F6E2:4D			TSTA
+F6E3:26 03		BNE   $F6E8
+
+F6E5:8E 0D 00		LDX   #$0D00
+F6E8:C3 11 11		ADDD  #$1111
+F6EB:24 E0		BCC   $F6CD
+
+F6ED:39			RTS
+
+F6EE:05 05 28 28 80 80 00 00 AD AD 2D 2D A8 A8 85 85
+F6FE:BD D0 12		JSR   $D012	; clear screen
+F701:4F			CLRA
+F702:BD F9 11		JSR   $F911
+F705:86 FF		LDA   #$FF
+F707:97 01		STA   $01
+F709:86 C0		LDA   #$C0
+F70B:97 02		STA   $02
+F70D:86 38		LDA   #$38
+F70F:97 03		STA   $03
+F711:86 07		LDA   #$07
+F713:97 04		STA   $04
+F715:10 8E F8 04	LDY   #$F804
+F719:CC 01 01		LDD   #$0101
+F71C:AE A4		LDX   ,Y
+F71E:ED 81		STD   ,X++
+F720:AC 22		CMPX  2,Y
+F722:26 FA		BNE   $F71E
+
+F724:31 24		LEAY  4,Y
+F726:10 8C F8 2C	CMPY  #$F82C
+F72A:26 F0		BNE   $F71C
+
+F72C:86 11		LDA   #$11
+F72E:10 8E F7 E4	LDY   #$F7E4
+F732:AE A4		LDX   ,Y
+F734:9F 2B		STX   $2B
+F736:A7 84		STA   ,X
+F738:0C 2B		INC   $2B
+F73A:9E 2B		LDX   $2B
+F73C:AC 22		CMPX  2,Y
+F73E:26 F6		BNE   $F736
+
+F740:31 24		LEAY  4,Y
+F742:10 8C F8 04	CMPY  #$F804
+F746:26 EA		BNE   $F732
+
+F748:10 8E F8 2C	LDY   #$F82C
+F74C:AE A4		LDX   ,Y
+F74E:9F 2B		STX   $2B
+F750:A6 24		LDA   4,Y
+F752:A7 84		STA   ,X
+F754:0C 2B		INC   $2B
+F756:9E 2B		LDX   $2B
+F758:AC 22		CMPX  2,Y
+F75A:26 F6		BNE   $F752
+
+F75C:31 25		LEAY  5,Y
+F75E:10 8C F8 68	CMPY  #$F868
+F762:26 E8		BNE   $F74C
+
+F764:10 8E F8 68	LDY   #$F868
+F768:AE A4		LDX   ,Y
+F76A:A6 24		LDA   4,Y
+F76C:A7 80		STA   ,X+
+F76E:AC 22		CMPX  2,Y
+F770:26 FA		BNE   $F76C
+
+F772:31 25		LEAY  5,Y
+F774:10 8C F8 7C	CMPY  #$F87C
+F778:26 EE		BNE   $F768
+
+F77A:86 21		LDA   #$21
+F77C:B7 43 7E		STA   $437E
+F77F:86 20		LDA   #$20
+F781:B7 93 7E		STA   $937E
+F784:8E 4B 0A		LDX   #$4B0A
+F787:1A 10		ORC   #$10	; turn off interrupts
+F789:7F C9 00		CLR   $C900
+F78C:A6 84		LDA   ,X
+F78E:C6 01		LDB   #$01
+F790:F7 C9 00		STB   $C900
+F793:1C EF		ANDC  #$EF
+F795:84 F0		ANDA  #$F0
+F797:8A 02		ORA   #$02
+F799:A7 80		STA   ,X+
+F79B:8C 4B 6D		CMPX  #$4B6D
+F79E:26 E7		BNE   $F787
+
+F7A0:8E 4B 90		LDX   #$4B90
+F7A3:1A 10		ORC   #$10	; turn off interrupts
+F7A5:7F C9 00		CLR   $C900
+F7A8:A6 84		LDA   ,X
+F7AA:C6 01		LDB   #$01
+F7AC:F7 C9 00		STB   $C900
+F7AF:1C EF		ANDC  #$EF
+F7B1:84 F0		ANDA  #$F0
+F7B3:8A 02		ORA   #$02
+F7B5:A7 80		STA   ,X+
+F7B7:8C 4B F3		CMPX  #$4BF3
+F7BA:26 E7		BNE   $F7A3
+
+F7BC:8E 0B 18		LDX   #$0B18
+F7BF:9F 2B		STX   $2B
+F7C1:9E 2B		LDX   $2B
+F7C3:A6 84		LDA   ,X
+F7C5:84 F0		ANDA  #$F0
+F7C7:8A 01		ORA   #$01
+F7C9:A7 84		STA   ,X
+F7CB:D6 2C		LDB   $2C
+F7CD:CB 22		ADDB  #$22
+F7CF:25 04		BCS   $F7D5
+
+F7D1:D7 2C		STB   $2C
+F7D3:20 EC		BRA   $F7C1
+
+F7D5:C6 18		LDB   #$18
+F7D7:D7 2C		STB   $2C
+F7D9:D6 2B		LDB   $2B
+F7DB:CB 10		ADDB  #$10
+F7DD:D7 2B		STB   $2B
+F7DF:C1 9B		CMPB  #$9B
+F7E1:26 DE		BNE   $F7C1
+
+F7E3:39			RTS
+
+F7E4:04 07 94 07 04 29 94 29 04 4B 94 4B 04 6D 94 6D
+F7F4:04 8F 94 8F 04 B1 94 B1 04 D3 94 D3 04 F5 94 F5
+F804:03 07 03 F5 13 07 13 F5 23 07 23 F5 33 07 33 F5
+F814:43 07 43 F5 53 07 53 F5 63 07 63 F5 73 07 73 F5
+F824:83 07 83 F5 93 07 93 F5 45 05 52 05 44 45 06 52
+F834:06 44 45 07 52 07 00 45 08 52 08 33 45 09 52 09
+F844:33 45 F3 52 F3 33 45 F4 52 F4 33 45 F5 52 F5 00
+F854:45 F6 52 F6 44 45 F7 52 F7 44 04 7E 43 7E 22 54
+F864:7E 93 7E 22 02 6F 02 8E 04 03 6F 03 8E 30 93 6F
+F874:93 8E 00 94 6F 94 8E 34
+F87C:35 06		PULS  B,A
+F87E:DE 15		LDU   $15
+F880:ED 4D		STD   13,U
+F882:BD D0 12		JSR   $D012	; clear screen
+
+F885:86 1E		LDA   #$1E	; message unknown
+F887:BD 5F 99		JSR   $5F99	; character output
+F88A:86 80		LDA   #$80
+F88C:A7 47		STA   7,U
+F88E:86 01		LDA   #$01
+F890:8E F8 96		LDX   #$F896
+F893:7E D0 66		JMP   $D066
+
+F896:BD FA D1		JSR   $FAD1
+F899:25 34		BCS   $F8CF
+
+F89B:6A 47		DEC   7,U
+F89D:26 EF		BNE   $F88E
+
+F89F:B6 F8 F9		LDA   $F8F9
+F8A2:8D 6D		BSR   $F911
+F8A4:8D 2E		BSR   $F8D4
+F8A6:8E F8 F9		LDX   #$F8F9
+F8A9:A6 80		LDA   ,X+
+F8AB:DE 15		LDU   $15
+F8AD:AF 49		STX   9,U
+F8AF:8D 60		BSR   $F911
+F8B1:86 80		LDA   #$80
+F8B3:A7 47		STA   7,U
+F8B5:86 01		LDA   #$01
+F8B7:8E F8 BD		LDX   #$F8BD
+F8BA:7E D0 66		JMP   $D066
+
+F8BD:BD FA D1		JSR   $FAD1
+F8C0:25 0D		BCS   $F8CF
+
+F8C2:6A 47		DEC   7,U
+F8C4:26 EF		BNE   $F8B5
+
+F8C6:AE 49		LDX   9,U
+F8C8:8C F9 01		CMPX  #$F901
+F8CB:25 DC		BCS   $F8A9
+
+F8CD:20 D7		BRA   $F8A6
+
+F8CF:DE 15		LDU   $15
+F8D1:6E D8 0D		JMP   [13,U]
+
+F8D4:8E 00 00		LDX   #$0000
+F8D7:10 8E F9 01	LDY   #$F901
+F8DB:BD F6 9D		JSR   $F69D
+F8DE:A6 A0		LDA   ,Y+
+F8E0:1F 89		TFR   A,B
+F8E2:ED 83		STD   ,--X
+F8E4:9C 2B		CMPX  $2B
+F8E6:26 FA		BNE   $F8E2
+
+F8E8:30 89 09 00	LEAX  2304,X
+F8EC:4D			TSTA
+F8ED:26 03		BNE   $F8F2
+
+F8EF:8E 0D 00		LDX   #$0D00
+F8F2:10 8C F9 11	CMPY  #$F911
+F8F6:26 E3		BNE   $F8DB
+
+F8F8:39			RTS
+
+F8F9:02			???   
+F8FA:03 04		COM   $04
+F8FC:10 18		???   
+F8FE:20 40		BRA   $F940
+
+F900:80 00		SUBA  #$00
+F902:FF 11 EE		STU   $11EE
+F905:22 DD		BHI   $F8E4
+
+F907:33 CC 44		LEAU  68,PCR
+F90A:BB 55 AA		ADDA  $55AA
+F90D:66 99 77 88	ROR   [30600,X]
+F911:8E 98 00		LDX   #$9800
+F914:A7 80		STA   ,X+
+F916:8C 98 10		CMPX  #$9810
+F919:25 F9		BCS   $F914
+
+F91B:39			RTS
+
+F91C:35 06		PULS  B,A
+F91E:DE 15		LDU   $15
+F920:ED 4D		STD   13,U
+F922:86 0A		LDA   #$0A
+F924:A7 4B		STA   11,U
+F926:BD D0 12		JSR   $D012	; clear screen
+
+F929:86 0C		LDA   #$0C	; message unknown
+F92B:BD 5F 99		JSR   $5F99	; character output
+F92E:CE B3 EA		LDU   #$B3EA
+F931:6F C0		CLR   ,U+
+F933:11 83 B3 F4	CMPU  #$B3F4
+F937:23 F8		BLS   $F931
+
+F939:CE F9 D5		LDU   #$F9D5
+F93C:8D 26		BSR   $F964
+F93E:86 34		LDA   #$34
+F940:B7 C8 07		STA   $C807
+F943:8D 1F		BSR   $F964
+F945:86 3C		LDA   #$3C
+F947:B7 C8 07		STA   $C807
+F94A:8D 28		BSR   $F974
+F94C:BD FA D1		JSR   $FAD1
+F94F:24 06		BCC   $F957
+
+F951:DE 15		LDU   $15
+F953:6A 4B		DEC   11,U
+F955:27 08		BEQ   $F95F
+
+F957:86 01		LDA   #$01
+F959:8E F9 39		LDX   #$F939
+F95C:7E D0 66		JMP   $D066
+
+F95F:DE 15		LDU   $15
+F961:6E D8 0D		JMP   [13,U]
+
+F964:AE C1		LDX   ,U++
+F966:27 0B		BEQ   $F973
+
+F968:10 AE C1		LDY   ,U++
+F96B:A6 84		LDA   ,X
+F96D:A8 A4		EORA  ,Y
+F96F:A7 21		STA   1,Y
+F971:20 F1		BRA   $F964
+
+F973:39			RTS
+
+F974:CE F9 ED		LDU   #$F9ED
+F977:10 8E B3 EA	LDY   #$B3EA
+F97B:C6 01		LDB   #$01
+F97D:E5 21		BITB  1,Y
+F97F:27 02		BEQ   $F983
+
+F981:8D 19		BSR   $F99C
+F983:33 43		LEAU  3,U
+F985:58			LSLB
+F986:24 F5		BCC   $F97D
+
+F988:31 22		LEAY  2,Y
+F98A:10 8C B3 F3	CMPY  #$B3F3
+F98E:22 0B		BHI   $F99B
+
+F990:B6 C8 06		LDA   $C806
+F993:2B E6		BMI   $F97B
+
+F995:10 8C B3 EF	CMPY  #$B3EF
+F999:23 E0		BLS   $F97B
+
+F99B:39			RTS
+
+F99C:34 14		PSHS  X,B
+F99E:86 3F		LDA   #$3F
+F9A0:B7 C8 0E		STA   $C80E
+F9A3:E8 A4		EORB  ,Y
+F9A5:E7 A4		STB   ,Y
+F9A7:E6 E4		LDB   ,S
+F9A9:E5 A4		BITB  ,Y
+F9AB:26 10		BNE   $F9BD
+
+F9AD:E6 42		LDB   2,U
+F9AF:27 22		BEQ   $F9D3
+
+F9B1:86 40		LDA   #$40
+F9B3:1F 01		TFR   D,X
+F9B5:CC 30 06		LDD   #$3006
+F9B8:BD D0 1B		JSR   $D01B
+F9BB:35 94		PULS  PC,X,B
+
+F9BD:E6 42		LDB   2,U
+F9BF:27 12		BEQ   $F9D3
+
+F9C1:86 40		LDA   #$40
+F9C3:1F 01		TFR   D,X
+F9C5:C6 BB		LDB   #$BB
+F9C7:D7 CF		STB   $CF
+F9C9:EC C4		LDD   ,U
+F9CB:BD 5F 96		JSR   $5F96
+F9CE:86 37		LDA   #$37
+F9D0:B7 C8 0E		STA   $C80E
+F9D3:35 94		PULS  PC,X,B
+
+F9D5:C8 0C B3 EA C8 04 B3 EC C8 06 B3 EE 00 00 C8 04
+F9E5:B3 F0 C8 06 B3 F2 00 00 0D 00 2C 0E 00 33 0F 00
+F9F5:3A 10 00 41 11 00 48 12 00 4F 13 00 56 00 00 00
+FA05:14 01 5D 15 01 64 16 01 6B 17 01 72 18 00 79 19
+FA15:00 80 1A 01 87 1B 01 8E 1C 01 95 1D 01 9C 00 00
+FA25:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+FA35:14 02 A3 15 02 AA 16 02 B1 17 02 B8 00 00 00 00
+FA45:00 00 1A 02 BF 1B 02 C6 1C 02 CD 1D 02 D4 00 00
+FA55:00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+FA65:CE F5 40		LDU   #$F540
+FA68:20 03		BRA   $FA6D
+
+FA6A:CE F5 17		LDU   #$F517
+FA6D:10 CE BF 70	LDS   #$BF70
+FA71:10 8E FA 7A	LDY   #$FA7A
+FA75:86 01		LDA   #$01
+FA77:7E FE 73		JMP   $FE73
+
+FA7A:B6 C8 0C		LDA   $C80C
+FA7D:85 02		BITA  #$02
+FA7F:26 F0		BNE   $FA71
+
+FA81:10 8E FA 8A	LDY   #$FA8A
+FA85:86 01		LDA   #$01
+FA87:7E FE 73		JMP   $FE73
+
+FA8A:B6 C8 0C		LDA   $C80C
+FA8D:85 02		BITA  #$02
+FA8F:27 F0		BEQ   $FA81
+
+FA91:10 8E FA 9A	LDY   #$FA9A
+FA95:86 01		LDA   #$01
+FA97:7E FE 73		JMP   $FE73
+
+FA9A:B6 C8 0C		LDA   $C80C
+FA9D:85 02		BITA  #$02
+FA9F:26 F0		BNE   $FA91
+
+FAA1:6E C4		JMP   ,U
+
+FAA3:35 06		PULS  B,A
+FAA5:DE 15		LDU   $15
+FAA7:ED 4D		STD   13,U
+FAA9:B6 C8 0C		LDA   $C80C
+FAAC:85 02		BITA  #$02
+FAAE:26 08		BNE   $FAB8
+
+FAB0:86 01		LDA   #$01
+FAB2:8E FA A9		LDX   #$FAA9
+FAB5:7E D0 66		JMP   $D066
+
+FAB8:0F 00		CLR   $00
+FABA:BD D0 12		JSR   $D012	; clear screen
+FABD:20 07		BRA   $FAC6
+
+FABF:B6 C8 0C		LDA   $C80C
+FAC2:85 02		BITA  #$02
+FAC4:27 08		BEQ   $FACE
+
+FAC6:86 02		LDA   #$02
+FAC8:8E FA BF		LDX   #$FABF
+FACB:7E D0 66		JMP   $D066
+
+FACE:6E D8 0D		JMP   [13,U]
+FAD1:34 02		PSHS  A
+FAD3:B6 C8 0C		LDA   $C80C
+FAD6:85 02		BITA  #$02
+FAD8:27 04		BEQ   $FADE
+
+FADA:1A 01		ORC   #$01
+FADC:35 82		PULS  PC,A
+
+FADE:1C FE		ANDC  #$FE
+FAE0:35 82		PULS  PC,A
+
+FAE2:86 FF		LDA   #$FF
+FAE4:97 59		STA   $59
+FAE6:BD F5 F5		JSR   $F5F5
+FAE9:8D E6		BSR   $FAD1
+FAEB:24 02		BCC   $FAEF
+
+FAED:8D B4		BSR   $FAA3
+
+FAEF:86 1F		LDA   #$1F	; message unknown
+FAF1:BD 5F 99		JSR   $5F99	; character output
+FAF4:CE CD 02		LDU   #$CD02
+FAF7:86 20		LDA   #$20	; message unkown
+FAF9:34 02		PSHS  A
+FAFB:BD 5F 99		JSR   $5F99	; character output
+FAFE:1E 31		EXG   US,X
+FB00:BD D0 A5		JSR   $D0A5
+FB03:34 04		PSHS  B
+FB05:BD D0 A8		JSR   $D0A8
+FB08:1F 02		TFR   D,Y
+FB0A:35 04		PULS  B
+FB0C:1E 31		EXG   US,X
+FB0E:8D 71		BSR   $FB81
+FB10:35 02		PULS  A
+FB12:4C			INCA
+FB13:11 83 CD 32	CMPU  #$CD32
+FB17:25 E0		BCS   $FAF9
+
+FB19:86 6A		LDA   #$6A	; message unknown
+FB1B:BD 5F 99		JSR   $5F99	; character output
+FB1E:34 10		PSHS  X
+FB20:8E CD 20		LDX   #$CD20
+FB23:10 8E CD 2C	LDY   #$CD2C
+FB27:BD FB B3		JSR   $FBB3
+FB2A:35 10		PULS  X
+FB2C:F6 B4 18		LDB   $B418
+FB2F:10 BE B4 19	LDY   $B419
+FB33:8D 4C		BSR   $FB81
+FB35:B6 B4 1B		LDA   $B41B
+FB38:84 0F		ANDA  #$0F
+FB3A:B7 B4 1C		STA   $B41C
+FB3D:B6 B4 1B		LDA   $B41B
+FB40:85 10		BITA  #$10
+FB42:27 08		BEQ   $FB4C
+
+FB44:84 EF		ANDA  #$EF
+FB46:44			LSRA
+FB47:8B 05		ADDA  #$05
+FB49:19			DAA
+FB4A:20 01		BRA   $FB4D
+
+FB4C:44			LSRA
+FB4D:BB B4 1C		ADDA  $B41C
+FB50:19			DAA
+FB51:1F 89		TFR   A,B
+
+FB53:86 6B		LDA   #$6B	; message unknown
+FB55:BD 5F 99		JSR   $5F99	; character output
+FB58:86 6C		LDA   #$6C	; message unknown
+FB5A:BD 5F 99		JSR   $5F99	; character output
+FB5D:34 10		PSHS  X
+FB5F:8E CD 26		LDX   #$CD26
+FB62:10 8E CD 2C	LDY   #$CD2C
+FB66:8D 4B		BSR   $FBB3
+FB68:35 10		PULS  X
+FB6A:F6 B4 18		LDB   $B418
+FB6D:10 BE B4 19	LDY   $B419
+FB71:8D 0E		BSR   $FB81
+FB73:F6 B4 1B		LDB   $B41B
+
+FB76:86 6D		LDA   #$6D	; an = sign with some ctrl data
+FB78:BD 5F 99		JSR   $5F99	; character output
+FB7B:BD FA A3		JSR   $FAA3
+FB7E:7E 6F 00		JMP   $6F00
+
+FB81:5D			TSTB
+FB82:27 0C		BEQ   $FB90
+
+FB84:86 29		LDA   #$29
+FB86:BD 5F 99		JSR   $5F99
+FB89:86 2A		LDA   #$2A
+FB8B:BD 5F 99		JSR   $5F99
+FB8E:20 05		BRA   $FB95
+
+FB90:86 2B		LDA   #$2B
+FB92:BD 5F 99		JSR   $5F99
+FB95:39			RTS
+
+FB96:34 04		PSHS  B
+FB98:BD D0 A2		JSR   $D0A2
+FB9B:1F 89		TFR   A,B
+FB9D:84 0F		ANDA  #$0F
+FB9F:81 09		CMPA  #$09
+FBA1:23 02		BLS   $FBA5
+
+FBA3:86 09		LDA   #$09
+FBA5:C4 F0		ANDB  #$F0
+FBA7:C1 90		CMPB  #$90
+FBA9:23 02		BLS   $FBAD
+
+FBAB:C6 90		LDB   #$90
+FBAD:34 04		PSHS  B
+FBAF:AA E0		ORA   ,S+
+FBB1:35 84		PULS  PC,B
+
+FBB3:34 76		PSHS  U,Y,X,B,A
+FBB5:CC 00 00		LDD   #$0000
+FBB8:FD B4 18		STD   $B418
+FBBB:FD B4 1A		STD   $B41A
+FBBE:8D D6		BSR   $FB96
+FBC0:B7 B4 06		STA   $B406
+FBC3:8D D1		BSR   $FB96
+FBC5:B7 B4 07		STA   $B407
+FBC8:8D CC		BSR   $FB96
+FBCA:B7 B4 08		STA   $B408
+FBCD:CC 00 00		LDD   #$0000
+FBD0:B7 B4 09		STA   $B409
+FBD3:FD B4 0A		STD   $B40A
+FBD6:B7 B4 15		STA   $B415
+FBD9:FD B4 16		STD   $B416
+FBDC:1F 21		TFR   Y,X
+FBDE:BD FB 96		JSR   $FB96
+FBE1:B7 B4 12		STA   $B412
+FBE4:BD FB 96		JSR   $FB96
+FBE7:B7 B4 13		STA   $B413
+FBEA:BD FB 96		JSR   $FB96
+FBED:B7 B4 14		STA   $B414
+FBF0:26 05		BNE   $FBF7
+
+FBF2:FC B4 12		LDD   $B412
+FBF5:27 3A		BEQ   $FC31
+
+FBF7:CE B4 1A		LDU   #$B41A
+FBFA:7D B4 12		TST   $B412
+FBFD:26 12		BNE   $FC11
+
+FBFF:33 5F		LEAU  -1,U
+FC01:C6 05		LDB   #$05
+FC03:8E B4 12		LDX   #$B412
+FC06:A6 01		LDA   1,X
+FC08:A7 80		STA   ,X+
+FC0A:5A			DECB
+FC0B:26 F9		BNE   $FC06
+
+FC0D:6F 84		CLR   ,X
+FC0F:20 E9		BRA   $FBFA
+
+FC11:8E B4 06		LDX   #$B406
+FC14:8D 1D		BSR   $FC33
+FC16:24 FC		BCC   $FC14
+
+FC18:10 8E B4 17	LDY   #$B417
+FC1C:C6 05		LDB   #$05
+FC1E:A6 3F		LDA   -1,Y
+FC20:A7 A4		STA   ,Y
+FC22:31 3F		LEAY  -1,Y
+FC24:5A			DECB
+FC25:26 F7		BNE   $FC1E
+
+FC27:6F A4		CLR   ,Y
+FC29:33 41		LEAU  1,U
+FC2B:11 83 B4 1B	CMPU  #$B41B
+FC2F:23 E3		BLS   $FC14
+
+FC31:35 F6		PULS  PC,U,Y,X,B,A
+
+FC33:10 8E B4 12	LDY   #$B412
+FC37:86 00		LDA   #$00
+FC39:E6 86		LDB   A,X
+FC3B:E0 A0		SUBB  ,Y+
+FC3D:22 07		BHI   $FC46
+
+FC3F:25 40		BCS   $FC81
+
+FC41:4C			INCA
+FC42:81 06		CMPA  #$06
+FC44:25 F3		BCS   $FC39
+
+FC46:C6 06		LDB   #$06
+FC48:10 8E B4 0C	LDY   #$B40C
+FC4C:86 99		LDA   #$99
+FC4E:A0 26		SUBA  6,Y
+FC50:A7 A0		STA   ,Y+
+FC52:5A			DECB
+FC53:26 F7		BNE   $FC4C
+
+FC55:C6 06		LDB   #$06
+FC57:1C FE		ANDC  #$FE
+FC59:86 01		LDA   #$01
+FC5B:A9 A2		ADCA  ,-Y
+FC5D:19			DAA
+FC5E:A7 A4		STA   ,Y
+FC60:86 00		LDA   #$00
+FC62:5A			DECB
+FC63:26 F6		BNE   $FC5B
+
+FC65:C6 05		LDB   #$05
+FC67:10 8E B4 12	LDY   #$B412
+FC6B:1C FE		ANDC  #$FE
+FC6D:A6 A2		LDA   ,-Y
+FC6F:A9 85		ADCA  B,X
+FC71:19			DAA
+FC72:A7 85		STA   B,X
+FC74:5A			DECB
+FC75:2A F6		BPL   $FC6D
+
+FC77:A6 C4		LDA   ,U
+FC79:8B 01		ADDA  #$01
+FC7B:19			DAA
+FC7C:A7 C4		STA   ,U
+FC7E:1C FE		ANDC  #$FE
+FC80:39			RTS
+
+FC81:1A 01		ORC   #$01
+FC83:39			RTS
+
+FC84:BD D0 12		JSR   $D012	; clear screen
+FC87:CC FE 01		LDD   #$FE01
+FC8A:ED 47		STD   7,U
+FC8C:39			RTS
+
+FC8D:35 06		PULS  B,A
+FC8F:ED 4D		STD   13,U
+FC91:86 3F		LDA   #$3F
+FC93:B7 C8 0E		STA   $C80E
+FC96:86 01		LDA   #$01
+FC98:8E FC 9E		LDX   #$FC9E
+FC9B:7E D0 66		JMP   $D066
+
+FC9E:86 2C		LDA   #$2C
+FCA0:B7 C8 0E		STA   $C80E
+FCA3:86 01		LDA   #$01
+FCA5:8E FC AB		LDX   #$FCAB
+FCA8:7E D0 66		JMP   $D066
+
+FCAB:86 3F		LDA   #$3F
+FCAD:B7 C8 0E		STA   $C80E
+FCB0:86 01		LDA   #$01
+FCB2:8E FC B8		LDX   #$FCB8
+FCB5:7E D0 66		JMP   $D066
+
+FCB8:EC 47		LDD   7,U
+FCBA:84 3F		ANDA  #$3F
+FCBC:B7 C8 0E		STA   $C80E
+FCBF:86 09		LDA   #$09
+FCC1:BD 5F 99		JSR   $5F99
+FCC4:86 40		LDA   #$40
+FCC6:A7 4B		STA   11,U
+FCC8:86 01		LDA   #$01
+FCCA:8E FC D0		LDX   #$FCD0
+FCCD:7E D0 66		JMP   $D066
+
+FCD0:BD FA D1		JSR   $FAD1
+FCD3:25 04		BCS   $FCD9
+
+FCD5:6A 4B		DEC   11,U
+FCD7:26 EF		BNE   $FCC8
+
+FCD9:A6 49		LDA   9,U
+FCDB:26 06		BNE   $FCE3
+
+FCDD:B6 C8 0C		LDA   $C80C
+FCE0:46			RORA
+FCE1:24 0E		BCC   $FCF1
+
+FCE3:EC 47		LDD   7,U
+FCE5:1A 01		ORC   #$01
+FCE7:49			ROLA
+FCE8:5C			INCB
+FCE9:C1 07		CMPB  #$07
+FCEB:25 02		BCS   $FCEF
+
+FCED:8D 98		BSR   $FC87
+FCEF:ED 47		STD   7,U
+FCF1:6E D8 0D		JMP   [13,U]
+
+FCF4:8E CC 00		LDX   #$CC00
+FCF7:10 8E B3 EA	LDY   #$B3EA
+FCFB:A6 80		LDA   ,X+
+FCFD:A7 A0		STA   ,Y+
+FCFF:8C D0 00		CMPX  #$D000
+FD02:26 F7		BNE   $FCFB
+
+FD04:C6 06		LDB   #$06
+FD06:1A 3F		ORC   #$3F
+FD08:DE 85		LDU   $85
+FD0A:10 9E 84		LDY   $84
+FD0D:8E CC 00		LDX   #$CC00
+FD10:BD D0 39		JSR   $D039
+FD13:A7 80		STA   ,X+
+FD15:86 39		LDA   #$39
+FD17:B7 CB FF		STA   $CBFF
+FD1A:8C D0 00		CMPX  #$D000
+FD1D:26 F1		BNE   $FD10
+
+FD1F:10 9F 84		STY   $84
+FD22:DF 85		STU   $85
+FD24:8E CC 00		LDX   #$CC00
+FD27:BD D0 39		JSR   $D039
+FD2A:A8 80		EORA  ,X+
+FD2C:84 0F		ANDA  #$0F
+FD2E:26 24		BNE   $FD54
+
+FD30:86 39		LDA   #$39
+FD32:B7 CB FF		STA   $CBFF
+FD35:8C D0 00		CMPX  #$D000
+FD38:26 ED		BNE   $FD27
+
+FD3A:5A			DECB
+FD3B:26 CB		BNE   $FD08
+
+FD3D:8D 03		BSR   $FD42
+FD3F:1C FE		ANDC  #$FE
+FD41:39			RTS
+
+FD42:CE B3 EA		LDU   #$B3EA
+FD45:10 8E CC 00	LDY   #$CC00
+FD49:A6 C0		LDA   ,U+
+FD4B:A7 A0		STA   ,Y+
+FD4D:10 8C D0 00	CMPY  #$D000
+FD51:26 F6		BNE   $FD49
+
+FD53:39			RTS
+
+FD54:8D EC		BSR   $FD42
+FD56:1A 01		ORC   #$01
+FD58:39			RTS
+
+************************************************************
+*
+*		RAM TEST  $0000 -> $BFFF
+*
+* On entry:
+*  A is the number of times to test RAM; $FF means infinity,
+*    used for diagnostic RAM test, interruptable with ADVANCE
+*    button.
+*  X is initial seed.
+*  Y is return address.
+*
+
+FD59:1A 3F		ORC   #$3F
+FD5B:7F C9 00		CLR   $C900	; RAM read
+FD5E:1F 8B		TFR   A,DP
+FD60:1F 10		TFR   X,D
+FD62:1F 03		TFR   D,US
+
+* Load RAM with values.
+
+FD64:8E 00 00		LDX   #$0000
+
+FD67:53			COMB		; make a fun value to stuff into byte
+FD68:C5 09		BITB  #$09
+FD6A:26 05		BNE   $FD71
+
+FD6C:53			COMB
+FD6D:46			RORA
+FD6E:56			RORB
+FD6F:20 0B		BRA   $FD7C
+
+FD71:53			COMB
+FD72:C5 09		BITB  #$09
+FD74:26 04		BNE   $FD7A
+
+FD76:46			RORA
+FD77:56			RORB
+FD78:20 02		BRA   $FD7C
+
+FD7A:44			LSRA
+FD7B:56			RORB
+FD7C:ED 81		STD   ,X++
+
+FD7E:1E 10		EXG   X,D
+FD80:5D			TSTB		; do below checks every 256th byte
+FD81:26 15		BNE   $FD98
+
+FD83:C6 39		LDB   #$39
+FD85:F7 CB FF		STB   $CBFF	; feed the watchdog
+FD88:1F B9		TFR   DP,B
+FD8A:C1 FF		CMPB  #$FF	; diagnostic RAM test?
+FD8C:26 09		BNE   $FD97
+
+FD8E:F6 C8 0C		LDB   $C80C	; yes, check for ADVANCE interrupt
+FD91:C5 02		BITB  #$02
+FD93:27 02		BEQ   $FD97
+
+FD95:6E A4		JMP   ,Y
+
+FD97:5F			CLRB
+FD98:1E 10		EXG   X,D
+FD9A:8C C0 00		CMPX  #$C000
+FD9D:26 C8		BNE   $FD67
+
+* Now check values to make sure they're there.
+
+FD9F:1F 30		TFR   US,D
+FDA1:8E 00 00		LDX   #$0000
+
+FDA4:53			COMB
+FDA5:C5 09		BITB  #$09
+FDA7:26 05		BNE   $FDAE
+
+FDA9:53			COMB
+FDAA:46			RORA
+FDAB:56			RORB
+FDAC:20 0B		BRA   $FDB9
+
+FDAE:53			COMB
+FDAF:C5 09		BITB  #$09
+FDB1:26 04		BNE   $FDB7
+
+FDB3:46			RORA
+FDB4:56			RORB
+FDB5:20 02		BRA   $FDB9
+
+FDB7:44			LSRA
+FDB8:56			RORB
+FDB9:10 A3 81		CMPD  ,X++
+FDBC:26 43		BNE   $FE01	; bad memory!
+
+FDBE:1E 10		EXG   X,D
+FDC0:5D			TSTB
+FDC1:26 15		BNE   $FDD8
+
+FDC3:C6 39		LDB   #$39
+FDC5:F7 CB FF		STB   $CBFF	; feed the watchdog
+FDC8:1F B9		TFR   DP,B
+FDCA:C1 FF		CMPB  #$FF	; diagnostic RAM test?
+FDCC:26 09		BNE   $FDD7
+
+FDCE:F6 C8 0C		LDB   $C80C	; yes, check for ADVANCE interrupt
+FDD1:C5 02		BITB  #$02
+FDD3:27 02		BEQ   $FDD7
+
+FDD5:6E A4		JMP   ,Y
+
+FDD7:5F			CLRB
+FDD8:1E 10		EXG   X,D
+FDDA:8C C0 00		CMPX  #$C000
+FDDD:26 C5		BNE   $FDA4
+
+* End of one pass of the RAM test. Everything seems to be okay.
+
+FDDF:1F 03		TFR   D,US
+FDE1:1F B8		TFR   DP,A
+FDE3:81 FF		CMPA  #$FF	; if diagnostic RAM test...
+FDE5:26 05		BNE   $FDEC
+
+FDE7:1F 30		TFR   US,D	; ...loop forever
+FDE9:7E FD 64		JMP   $FD64
+
+FDEC:4A			DECA		; do it again?
+FDED:1F 8B		TFR   A,DP
+FDEF:81 80		CMPA  #$80
+FDF1:27 07		BEQ   $FDFA
+
+FDF3:4D			TSTA
+FDF4:1F 30		TFR   US,D
+FDF6:10 26 FF 6A	LBNE  $FD64	; yes
+
+FDFA:C6 01		LDB   #$01	; done; ROM read
+FDFC:F7 C9 00		STB   $C900
+FDFF:6E A4		JMP   ,Y
+
+* Bad RAM byte! Display error code on 7seg LED and try to print
+* message on screen.
+
+FE01:30 1E		LEAX  -2,X	; apparently if M^D is 0, it's okay!
+FE03:A8 84		EORA  ,X
+FE05:E8 01		EORB  1,X
+FE07:4D			TSTA
+FE08:26 07		BNE   $FE11
+
+FE0A:5D			TSTB
+FE0B:26 04		BNE   $FE11
+
+FE0D:30 02		LEAX  2,X
+FE0F:20 AD		BRA   $FDBE
+
+FE11:CE 00 30		LDU   #$0030	; it's really bad
+FE14:1E 10		EXG   X,D	; calc LED code based on RAM page
+FE16:5F			CLRB
+FE17:1E 10		EXG   X,D
+FE19:8C 00 00		CMPX  #$0000
+FE1C:27 12		BEQ   $FE30
+
+FE1E:30 89 FF 00	LEAX  -256,X
+FE22:33 C8 10		LEAU  16,U
+FE25:11 83 00 30	CMPU  #$0030
+FE29:23 EE		BLS   $FE19
+
+FE2B:CE 00 10		LDU   #$0010
+FE2E:20 E9		BRA   $FE19
+
+FE30:33 41		LEAU  1,U
+FE32:47			ASRA
+FE33:25 05		BCS   $FE3A
+
+FE35:57			ASRB
+FE36:25 02		BCS   $FE3A
+
+FE38:20 F6		BRA   $FE30
+
+FE3A:1F 30		TFR   US,D
+FE3C:86 01		LDA   #$01	; error condition code for RAM
+FE3E:B7 C9 00		STA   $C900	; (also ROM read)
+FE41:10 CE FE 47	LDS   #$FE47	; 'return' address
+FE45:20 40		BRA   $FE87	; display error condition & chip no.
+
+FE47:86 98		LDA   #$98
+FE49:1F 8B		TFR   A,DP
+FE4B:1F A8		TFR   CC,A
+FE4D:43			COMA
+FE4E:85 C0		BITA  #$C0	; Entire & FIRQ disable
+FE50:27 04		BEQ   $FE56	; perhaps this is a signature of
+
+					; getting here from cold reset.
+FE52:86 0B		LDA   #$0B	; "RAM ERROR x"
+FE54:20 02		BRA   $FE58
+
+FE56:86 02		LDA   #$02	; "INITIAL TESTS...RAM ERROR x"
+FE58:10 CE BF 70	LDS   #$BF70	; set up stack
+FE5C:BD D0 12		JSR   $D012	; clear screen
+FE5F:BD 5F 99		JSR   $5F99	; (try to) print message
+FE62:1F A8		TFR   CC,A
+FE64:85 40		BITA  #$40	; FIRQ disabled: cold or diag?
+FE66:26 03		BNE   $FE6B
+
+FE68:7E FA 65		JMP   $FA65	; back to diagnostics
+
+* Even though RAM failed at cold reset, try to jump into game anyway!
+
+FE6B:10 8E D0 00	LDY   #$D000
+FE6F:20 00		BRA   $FE71	; delay first (BRA unnecessary!)
+
+************************************************************
+*
+* Special entry to delay routine hardcoded for 32 seconds.
+*
+
+FE71:86 20		LDA   #$20
+
+************************************************************
+*
+*		DELAY 'A' SECONDS
+*
+* On entry:
+*  A is number of seconds.
+*  Y is return address.
+*
+
+FE73:8E 58 00		LDX   #$5800
+FE76:30 1F		LEAX  -1,X
+FE78:C6 39		LDB   #$39
+FE7A:F7 CB FF		STB   $CBFF	; feed the watchdog
+FE7D:8C 00 00		CMPX  #$0000
+FE80:26 F4		BNE   $FE76
+
+FE82:4A			DECA
+FE83:26 EE		BNE   $FE73
+
+FE85:6E A4		JMP   ,Y
+
+************************************************************
+*
+*		DISPLAY COLD RESET ERROR CODE
+*		ON ROM BOARD 7-SEGMENT LED
+*
+* On entry:
+*  A is error condition (1 is RAM, 2 is ROM).
+*  B is 2-digit chip number.
+*  Y is return address.
+*
+
+FE87:1F 03		TFR   D,US
+FE89:86 02		LDA   #$02	; display it twice
+FE8B:1F 8B		TFR   A,DP
+
+* Display error condition.
+
+FE8D:1F 30		TFR   US,D
+FE8F:10 8E FE 95	LDY   #$FE95
+FE93:20 7C		BRA   $FF11	; set LED
+
+FE95:86 02		LDA   #$02
+FE97:10 8E FE 9D	LDY   #$FE9D
+FE9B:20 D6		BRA   $FE73	; delay 2 seconds
+
+FE9D:10 8E FE A3	LDY   #$FEA3
+FEA1:20 5E		BRA   $FF01	; blank LED
+
+FEA3:86 01		LDA   #$01
+FEA5:10 8E FE AB	LDY   #$FEAB
+FEA9:20 C8		BRA   $FE73	; delay 1 second
+
+* Display first digit of chip number.
+
+FEAB:1F 30		TFR   US,D
+FEAD:1F 98		TFR   B,A
+FEAF:44			LSRA
+FEB0:44			LSRA
+FEB1:44			LSRA
+FEB2:44			LSRA
+FEB3:10 8E FE B9	LDY   #$FEB9
+FEB7:20 58		BRA   $FF11	; set LED
+
+FEB9:86 02		LDA   #$02
+FEBB:10 8E FE C1	LDY   #$FEC1
+FEBF:20 B2		BRA   $FE73	; delay for 2 seconds
+
+FEC1:10 8E FE C7	LDY   #$FEC7
+FEC5:20 3A		BRA   $FF01	; blank LED
+
+FEC7:86 01		LDA   #$01
+FEC9:10 8E FE CF	LDY   #$FECF
+FECD:20 A4		BRA   $FE73	; delay for 1 second
+
+* Display second digit of chip number.
+
+FECF:1F 30		TFR   US,D
+FED1:1F 98		TFR   B,A
+FED3:10 8E FE D9	LDY   #$FED9
+FED7:20 38		BRA   $FF11	; set LED
+
+FED9:86 02		LDA   #$02
+FEDB:10 8E FE E1	LDY   #$FEE1
+FEDF:20 92		BRA   $FE73	; delay for 2 seconds
+
+FEE1:10 8E FE E7	LDY   #$FEE7
+FEE5:20 1A		BRA   $FF01	; blank LED
+
+FEE7:86 05		LDA   #$05
+FEE9:10 8E FE F0	LDY   #$FEF0
+FEED:7E FE 73		JMP   $FE73	; delay for 5 seconds
+
+FEF0:1F B8		TFR   DP,A
+FEF2:4A			DECA
+FEF3:1F 8B		TFR   A,DP
+FEF5:26 96		BNE   $FE8D	; repeat
+
+FEF7:10 8E FE FD	LDY   #$FEFD
+FEFB:20 04		BRA   $FF01	; leave LED blank
+
+FEFD:1F 30		TFR   US,D
+FEFF:6E E4		JMP   ,S	; return
+
+************************************************************
+*
+*		BLANK ROM BOARD 7-SEGMENT LED
+*
+* On entry:
+*  Y is return address.
+*
+
+FF01:86 3C		LDA   #$3C
+FF03:B7 C8 0D		STA   $C80D
+FF06:4C			INCA
+FF07:B7 C8 0F		STA   $C80F
+FF0A:86 C0		LDA   #$C0
+FF0C:B7 C8 0E		STA   $C80E
+FF0F:6E A4		JMP   ,Y
+
+************************************************************
+*
+*		DISPLAY DIGIT ON ROM BOARD 7-SEGMENT LED
+*
+* On entry:
+*  A is digit to display.
+*  Y is return address.
+*
+
+FF11:1F 89		TFR   A,B
+FF13:46			RORA
+FF14:46			RORA
+FF15:46			RORA
+FF16:84 C0		ANDA  #$C0
+FF18:B7 C8 0E		STA   $C80E
+FF1B:86 34		LDA   #$34
+FF1D:C5 04		BITB  #$04
+FF1F:27 02		BEQ   $FF23
+
+FF21:86 3C		LDA   #$3C
+FF23:B7 C8 0F		STA   $C80F
+FF26:86 34		LDA   #$34
+FF28:C5 08		BITB  #$08
+FF2A:27 02		BEQ   $FF2E
+
+FF2C:86 3C		LDA   #$3C
+FF2E:B7 C8 0D		STA   $C80D
+FF31:6E A4		JMP   ,Y
+
+************************************************************
+*
+*		ROM CHECKSUM TEST
+*
+* On entry:
+*  Y is return address.
+*
+
+FF33:1A 3F		ORC   #$3F
+
+* Use table at $FFA9 to determine starting address of 4K ROM and the
+* checksum we should get.
+
+FF35:8E FF A9		LDX   #$FFA9
+
+FF38:8C FF C9		CMPX  #$FFC9
+FF3B:27 6A		BEQ   $FFA7	; done checksumming
+
+FF3D:A6 01		LDA   1,X
+FF3F:27 18		BEQ   $FF59	; don't checksum this 4K bank
+
+FF41:A6 84		LDA   ,X
+FF43:5F			CLRB
+FF44:1F 03		TFR   D,US
+FF46:86 39		LDA   #$39	; get food ready for watchdog
+
+* Checksum 4K bank. Checksum is computed as simple sum of all bytes
+* mod 256.
+
+FF48:EB C0		ADDB  ,U+	; update running checksum
+FF4A:B7 CB FF		STA   $CBFF	; feed watchdog
+FF4D:1E 03		EXG   D,US
+FF4F:A1 02		CMPA  2,X	; repeat until done with 4K bank
+FF51:1E 03		EXG   D,US
+FF53:26 F3		BNE   $FF48
+
+* Check computed checksum against what our table says it should be.
+
+FF55:E1 01		CMPB  1,X	; checksum match?
+FF57:26 04		BNE   $FF5D	; no, ROM error
+
+FF59:30 02		LEAX  2,X
+FF5B:20 DB		BRA   $FF38	; repeat for all 4K banks
+
+* Bad ROM checksum! Display error code on 7seg LED and try to print
+* message on screen.
+
+FF5D:A6 84		LDA   ,X	; calc bad chip number
+FF5F:44			LSRA
+FF60:44			LSRA
+FF61:44			LSRA
+FF62:44			LSRA
+FF63:81 0D		CMPA  #$0D
+FF65:25 02		BCS   $FF69
+
+FF67:80 04		SUBA  #$04
+FF69:8B 01		ADDA  #$01
+FF6B:19			DAA
+FF6C:1F 89		TFR   A,B
+FF6E:86 02		LDA   #$02	; error condition code for ROM
+FF70:10 CE FF 77	LDS   #$FF77
+FF74:7E FE 87		JMP   $FE87	; display error condition & chip no.
+
+* ROM is bad, but try to display error message on video anyway.
+
+FF77:86 98		LDA   #$98
+FF79:1F 8B		TFR   A,DP	; set up direct page at $9800
+FF7B:86 39		LDA   #$39
+FF7D:B7 CB FF		STA   $CBFF	; feed watchdog
+FF80:10 CE BF 70	LDS   #$BF70
+FF84:BD D0 12		JSR   $D012	; clear screen
+FF87:1F A8		TFR   CC,A
+FF89:43			COMA
+FF8A:85 C0		BITA  #$C0	; determine if cold reset or diag.
+FF8C:27 04		BEQ   $FF92
+
+FF8E:86 0A		LDA   #$0A	; "ROM ERROR x"
+FF90:20 02		BRA   $FF94
+
+FF92:86 03		LDA   #$03	; "INITIAL TESTS...ROM ERROR x"
+FF94:BD 5F 99		JSR   $5F99
+FF97:1F A9		TFR   CC,B
+FF99:C5 40		BITB  #$40
+FF9B:26 03		BNE   $FFA0
+
+FF9D:7E FA 6A		JMP   $FA6A	; back to diags
+
+* Even though ROM failed at cold reset, try to jump into game anyway!
+
+FFA0:10 8E D0 00	LDY   #$D000
+FFA4:7E FE 71		JMP   $FE71	; delay first
+
+FFA7:6E A4		JMP   ,Y	; checksums check out; return
+
+* Table of bank addresses and checksums for cold reset ROM checksum test.
+* First byte is msbyte of bank address; second byte is expected checksum.
+
+FFA9:00 73 10 EA 20 8B 30 64 40 23 50 22 60 DC 70 3B
+FFB9:80 63 90 00 A0 00 B0 00 C0 00 D0 6F E0 7F F0 01
+
+FFC9:00 D4	; ???
+
+FFCB:20 28 43 29 20 31 39 38 32 20 57 49 4C 4C 49 41  ' (C) 1982 WILLIA'
+FFDB:4D 53 20 45 4C 45 43 54 52 4F 4E 49 43 53 20 49  'MS ELECTRONICS I'
+FFEB:4E 43 2E 20				      'NC. '
+
+FFEF:FF		; filler
+
+* 6809 exception vectors. Everything but IRQ causes a cold reset.
+
+FFF0:F0 00	; reserved
+FFF2:F0 00	; SWI3
+FFF4:F0 00	; SWI2
+FFF6:F0 00	; FIRQ
+FFF8:DC 56	; IRQ
+FFFA:F0 00	; SWI
+FFFC:F0 00	; NMI
+FFFE:F0 00	; RESET

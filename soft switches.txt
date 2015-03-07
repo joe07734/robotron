@@ -1,0 +1,87 @@
+
+*
+* Detailed explanation of soft switches.
+*
+
+C800 -	Color registers
+C804 -	PIA2
+	Read:
+	Bit 0 - move up
+	Bit 1 - move down
+	Bit 2 - move left
+	Bit 3 - move right
+	Bit 4 - start 1
+	Bit 5 - start 2
+	Bit 6 - fire up
+	Bit 7 - fire down
+C805 -	PIA2 control
+	cold boot code D118 clears it then sets it to $34
+C806 -	PIA3
+	Read:
+	Bit 0 - fire left
+	Bit 1 - fire right
+	Bit 7 - cocktail
+	Write?:
+	CB2 output switch MUX control 1 = player 1, 0 = player 2
+C807 -	PIA3 control
+	cold boot code D118 clears it then sets it to $3C
+	D4FC sets it to $3C
+	D503 sets it to $34
+C80C -	PIA0
+	Read:
+	Bit 0 - auto up
+	Bit 1 - advance
+	Bit 2 - rcoin
+	Bit 3 - hsreset
+	Bit 4 - lcoin
+	Bit 5 - ccoin
+	Bit 6 - slam
+	Bit 7 - sound handshake
+	Write:
+	CA2 - 7 segment display bit 3
+	CA1 IRQ 240 (16 MS) (line 240)
+C80D -	PIA0 control
+	cold boot code D118 clears it then sets it to $34
+C80E -	PIA1
+	Read:
+	Bit 0-5 - sound
+	Bit 6-7 - 7 segment display bits 0, 1
+	Write:
+	CB1 IRQ 4 MS (0, $40, $80, $C0)
+	CB2 - 7 segment display bit 2
+C80F -	PIA1 control
+	cold boot code D118 clears it then sets it to $35
+C900 -	?shadow kept in $9845
+	Bit 0 - 1 rom read; 0 ram read (bank switch)
+	Bit 1 - 1 invert; 0 normal screen (cocktail switching)
+
+
+***
+*
+* 2D DMA (blitter) access
+*
+***
+
+CA00	- invoke a blit. bits control behavior:
+	Bit 7 - Do not process half the byte 4-7
+	Bit 6 - Do not process half the byte 0-3
+	Bit 5 - Shift the shape one pixel right (to display a shape on an odd pixel)
+	Bit 4 - Remap, if shape != 0 then pixel = mask
+	Bit 3 - Source  1 = take source 0 = take Mask only
+	Bit 2 - ?
+	Bit 1 - Transparent
+	Bit 0 -
+CA01	- blitter mode?
+	  	$00 - erase? (write black for non-black src pixels)
+	  	$66
+	  	$CC
+CA02,3	- address of shape raster
+CA04,5	- destination on screen
+CA06	- width, EOR #$04
+CA07	- height, EOR #$04
+
+
+CB00	- 6 bits of the video counters bits 2-7
+
+CBFF	- watchdog (write $39 = reset)
+CC00-CFFF - CMOS ram

@@ -1,0 +1,8 @@
+27 jul 92
+
+This is the current state of the "disassembly-in-progress" of Williams Electronics' Robotron arcade game. Machine disassembled from the ROMs by a program written by joe holt; commented by joe holt and Steve Hawley. This has been a hobby of Steve's and mine since we got the beast. There are no guarantees. Please do not distribute this, as we are unsure of the legal implications. It is for our amusement and benefit only. If you have any questions or would like to contribute disassembly time, please contact us. We can also create disassemblies (uncommented, of course) of Defender, Stargate and Joust, if anyone's interested.
+
+Steve and I have amassed quite a bit of Robotron, Defender, et al hardware and software trivia. If anyone would like a rundown on the architecture, just stop by and ask. There are some amazing things going on in there.
+
+/joe
+Once a game designer, always a game designer.

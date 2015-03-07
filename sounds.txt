@@ -1,0 +1,66 @@
+00 0000000 - Self test noise
+01 0000001 - Long explosion
+02 0000010 - Dropping whistles (R High score sound part 3)
+03 0000011 - Alert Klaxon (R High score sound part 1)
+04 0000100 - Thuck
+05 0000101 - Crowd cheers
+06 0000110 - Slowly rising white noise
+07 0000111 - Quickly dropping scale
+08 0001000 - Two weird modulating frequencies
+09 0001001 - Dropping pitch (R high score part 2)
+0A 0001010 - 2 sines a close med freq (R coin noise)
+0B 0001011 - random tones (J high score?)
+0C 0001100 - Reverbing thwip (J 1 player start)
+0D 0001101 - Quickly rising tone
+0E 0001110 - Sine modulating frequency
+0F 0001111 - Quickly dropping tone
+10 0010000 - Reverbing thwop
+11 0010001 - Short explosion
+12 0010010 - Wimpy ping (R coin)
+13 0010011 - Lasery-noise
+14 0010100 - Echoey modulating funky stuff (long)
+15 0010101 - Quickly modulated freq (J lava troll?)
+16 0010110 - Slowly dropping tone (long joe says it's fuzzy)
+17 0010111 - 2 player start (J)
+18 0011000 - Player materialize (J)
+19 0011001 - Even lance noise collision thing (J)
+1A 0011010 - Low bellish echo fading thing
+1B 0011011 - Higher bellish echo thing (R coin)
+1C 0011100 - Opponent materialize (J)
+1D 0011101 - Long dropping modulation
+1E 0011110 - Reverbing choong
+1F 0011111 - Thunk (R coin)
+01xxxxx - same as 00xxxxx
+40 1000000 - self test noise
+41 1000001 - Extra guy (R, D)
+42 1000010 - Enforcer shots
+43 1000011 - Silence
+44 1000100 - Silence
+45 1000101 - Human death (R)
+1000110 - Defender coin drop
+1000111 - Spheroid giving birth
+1001000 - Reeeeally short explosion
+1001001 - Defender jets
+1001010 - Lander materialize
+1001011 - Defender firing
+1001100 - Silence
+1001101 - Bulalalalup
+1001110 - Human being shot (D)
+1001111 - Quiet moulation sound that doesn't go away
+1010000 - Silence
+1010001 - Swarm of bees or generator
+1010010 - Pick up human (R gulgulgulgulgulgul...)
+1010011 - Boolulululul (D swarmer firing)
+1010100 - Insecty kind of noise
+1010101 - 1 player start (Defender)
+1010110 - Mutant firing
+1010111 - buwhup (R coin)
+1011000 - eggs hatching (J), baiter explosion (D)
+1011001 - thump thump thump
+1011010 - really low bellish long echoey thing
+1011011 - long dropping thing similar to but not the same as 0011101
+1011100 - baiter firing
+1011101 - wrenching modulation
+1011110 - r firing, bombers exploding
+1011111 - silence
+11xxxxx - same as 10xxxxx

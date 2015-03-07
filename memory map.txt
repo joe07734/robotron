@@ -1,0 +1,33 @@
+0000-8FFF - ROM lower code; RAM screen
+8900-97FF - RAM more of screen
+9800-98FF - Direct Page variables
+
+9900-A9DF - 9900 list; elements are 24 bytes
+A9E0-B0E7 - A9E0 list (threads)
+B0E8-B353 - B0E8 list
+B354-B3A3 - list of active humans
+B3A4-B3E3 -
+B3E4-BB73 - B3E4 list
+BB74- 
+BDE4	  - Player 1 data
+    0,1	- score
+    2-7 - ?
+    8   - number of men
+    9	- ?
+BE20	  - Player 2 data
+
+BE5E	  - sphereoid?
+BE5F	  - enforcer?
+BE60	  - sphereoid?
+BE66	  - quark?
+BE6A	  - number of moms
+BE6B	  - number of dads
+BE6C	  - number of mikeys
+BE6D	  - number of hulks
+BE6F	  - number of spheroids
+BE70	  - number of quarks
+BE71	  - number of tanks
+
+C800-C8FF - Soft switches
+
+D000-FFFF - ROM upper code
